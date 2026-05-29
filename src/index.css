@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+/* ────────────────────────────────────────────────────────────
+   Design tokens — light docs theme (Stripe / Anthropic / Vercel style)
+   ──────────────────────────────────────────────────────────── */
+@theme {
+  --color-bg:           #ffffff;
+  --color-bg-soft:      #fafbfc;
+  --color-bg-code:      #0d1117;
+  --color-border:       #e4e7eb;
+  --color-border-soft:  #f0f1f4;
+
+  --color-ink:          #0f172a;   /* primary text */
+  --color-ink-soft:     #334155;   /* secondary text */
+  --color-muted:        #64748b;   /* tertiary text */
+  --color-dim:          #94a3b8;   /* meta / dim */
+
+  --color-accent:       #6d49d9;   /* DapplePot purple, tuned for light bg */
+  --color-accent-soft:  #ede9fe;
+  --color-accent-deep:  #5b3cb8;
+
+  --color-success:      #10b981;
+  --color-warning:      #f59e0b;
+  --color-danger:       #ef4444;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+
+/* ────────────────────────────────────────────────────────────
+   Prose styling — applied to the main docs content area
+   so we do not have to add classes to every element.
+   ──────────────────────────────────────────────────────────── */
+.prose h1 {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: var(--color-ink);
+  margin: 0 0 12px;
+}
+.prose .eyebrow {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+.prose .lede {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+  margin-bottom: 32px;
+  max-width: 680px;
+}
+.prose h2 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+  color: var(--color-ink);
+  margin: 56px 0 14px;
+  scroll-margin-top: 100px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+.prose h3 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--color-ink);
+  margin: 32px 0 10px;
+  scroll-margin-top: 100px;
+}
+.prose p {
+  margin: 0 0 16px;
+  color: var(--color-ink-soft);
+}
+.prose ul, .prose ol {
+  margin: 0 0 16px;
+  padding-left: 22px;
+  color: var(--color-ink-soft);
+}
+.prose ul li, .prose ol li {
+  margin: 6px 0;
+}
+.prose ul { list-style: none; padding-left: 0; }
+.prose ul li {
+  position: relative;
+  padding-left: 22px;
+}
+.prose ul li::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 11px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+.prose strong { color: var(--color-ink); font-weight: 600; }
+.prose a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.prose a:hover { border-bottom-color: var(--color-accent); }
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-deep);
+  font-weight: 500;
+}
+.prose pre code,
+.prose .codeblock code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: 400;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Syntax highlighting tokens (used inside .codeblock pre)
+   Dark-block tokens tuned for #0d1117 background
+   ──────────────────────────────────────────────────────────── */
+.tok-keyword   { color: #ff7b9c; }
+.tok-builtin   { color: #79c0ff; }
+.tok-string    { color: #a5d6a7; }
+.tok-comment   { color: #6e7681; font-style: italic; }
+.tok-number    { color: #ffa657; }
+.tok-decorator { color: #d2a8ff; }
+.tok-command   { color: #a5d6a7; font-weight: 500; }
+
+/* ────────────────────────────────────────────────────────────
+   Custom scrollbar — subtle, matches light theme
+   ──────────────────────────────────────────────────────────── */
+.scrollarea::-webkit-scrollbar           { width: 6px; height: 6px; }
+.scrollarea::-webkit-scrollbar-thumb     { background: var(--color-border); border-radius: 3px; }
+.scrollarea::-webkit-scrollbar-thumb:hover { background: var(--color-dim); }
+.scrollarea::-webkit-scrollbar-track     { background: transparent; }
