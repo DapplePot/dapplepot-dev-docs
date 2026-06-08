@@ -1,4 +1,4 @@
-import logo from '../assets/dapplePotLogo.svg';
+import logo from '../assets/dapplePotLogo.png';
 import { FaGithub, FaLinkedin, FaXTwitter } from 'react-icons/fa6';
 
 const TopBar = ({ onMenuClick }) => (

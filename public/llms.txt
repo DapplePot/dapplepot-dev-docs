@@ -1,0 +1,16 @@
+# DapplePot Developer Docs
+
+> Developer documentation for the DapplePot Python SDK. DapplePot provides runtime security, session replay, and real-time threat detection for AI agents — including prompt injection detection, data leakage prevention, and excessive agency checks.
+
+DapplePot instruments AI agents and forwards structured events to its ingest API. Twelve security sub-checks run synchronously on every event. Findings fire immediately, and per-check actions can sanitize content, block the call, or terminate the session. The SDK supports Anthropic, OpenAI, LangChain, and LangGraph.
+
+Install: `pip install dapplepot-sdk`
+
+## Pages
+
+- [Introduction](https://docs.dapplepot.com/sdk): Getting started with the DapplePot Python SDK. Covers what the SDK does, installation, session creation with `dp.session()`, configuration, and the event model.
+- [Anthropic Integration](https://docs.dapplepot.com/sdk/agent-frameworks/anthropic): How to instrument Anthropic Claude agents. Calls `dp.instrument_anthropic()` to auto-patch `messages.create()` and capture every LLM and tool event automatically.
+- [OpenAI Integration](https://docs.dapplepot.com/sdk/agent-frameworks/openai): How to instrument OpenAI agents. Calls `dp.instrument_openai()` to auto-patch `chat.completions.create()` for full LLM and tool event capture.
+- [LangChain Integration](https://docs.dapplepot.com/sdk/agent-frameworks/langchain): How to monitor LangChain agents using DapplePot's built-in callback handler. No `instrument_*` call needed — pass a fresh `callback_handler()` per chain invocation.
+- [LangGraph Integration](https://docs.dapplepot.com/sdk/agent-frameworks/langgraph): How to monitor LangGraph agents. Same callback model as LangChain. Each graph node becomes a named `node_start`/`node_end` pair; the graph invocation itself is the session.
+- [FAQs](https://docs.dapplepot.com/sdk/help/faq): Answers to common questions about installing, configuring, and using the DapplePot Python SDK for AI agent security monitoring.

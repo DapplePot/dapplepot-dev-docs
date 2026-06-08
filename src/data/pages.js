@@ -9,22 +9,70 @@ export const SECTIONS = [
   {
     title: null,
     pages: [
-      { label: 'Introduction', path: '/sdk',                              component: IntroPage },
+      {
+        label: 'Introduction',
+        path: '/sdk',
+        component: IntroPage,
+        seo: {
+          title: 'DapplePot Python SDK · Developer Guide',
+          description: 'Runtime security, session replay, and real-time threat detection for AI agents — in a few lines of code. Drop-in integrations for Anthropic, OpenAI, LangChain, and LangGraph.',
+        },
+      },
     ],
   },
   {
     title: 'Agent frameworks',
     pages: [
-      { label: 'Anthropic',   path: '/sdk/agent-frameworks/anthropic',   component: AnthropicPage },
-      { label: 'OpenAI',      path: '/sdk/agent-frameworks/openai',      component: OpenAIPage },
-      { label: 'LangChain',   path: '/sdk/agent-frameworks/langchain',   component: LangChainPage },
-      { label: 'LangGraph',   path: '/sdk/agent-frameworks/langgraph',   component: LangGraphPage },
+      {
+        label: 'Anthropic',
+        path: '/sdk/agent-frameworks/anthropic',
+        component: AnthropicPage,
+        seo: {
+          title: 'Anthropic Integration · DapplePot Python SDK',
+          description: 'Instrument your Anthropic Claude agent with DapplePot. Auto-patches messages.create() to capture every LLM and tool event with real-time security checks.',
+        },
+      },
+      {
+        label: 'OpenAI',
+        path: '/sdk/agent-frameworks/openai',
+        component: OpenAIPage,
+        seo: {
+          title: 'OpenAI Integration · DapplePot Python SDK',
+          description: 'Instrument your OpenAI agent with DapplePot. Auto-patches chat.completions.create() for full LLM and tool event capture with real-time threat detection.',
+        },
+      },
+      {
+        label: 'LangChain',
+        path: '/sdk/agent-frameworks/langchain',
+        component: LangChainPage,
+        seo: {
+          title: 'LangChain Integration · DapplePot Python SDK',
+          description: 'Add DapplePot security monitoring to LangChain agents using the built-in callback handler. Capture every chain event with zero boilerplate.',
+        },
+      },
+      {
+        label: 'LangGraph',
+        path: '/sdk/agent-frameworks/langgraph',
+        component: LangGraphPage,
+        seo: {
+          title: 'LangGraph Integration · DapplePot Python SDK',
+          description: 'Monitor LangGraph agents with DapplePot. Each graph node becomes a named trace pair, giving full visibility and security across every step.',
+        },
+      },
     ],
   },
   {
     title: 'Help',
     pages: [
-      { label: 'FAQs',        path: '/sdk/help/faq',                     component: FaqsPage },
+      {
+        label: 'FAQs',
+        path: '/sdk/help/faq',
+        component: FaqsPage,
+        seo: {
+          title: 'FAQs · DapplePot Python SDK',
+          description: 'Answers to common questions about installing, configuring, and using the DapplePot Python SDK for AI agent security monitoring.',
+        },
+      },
     ],
   },
 ];

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://docs.dapplepot.com/sitemap.xml
+LLMs: https://docs.dapplepot.com/llms.txt

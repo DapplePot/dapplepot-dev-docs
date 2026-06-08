@@ -1,10 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import TopBar     from './components/TopBar.jsx';
 import Sidebar    from './components/Sidebar.jsx';
 import PrevNext   from './components/PrevNext.jsx';
 import OnThisPage from './components/OnThisPage.jsx';
 import { findPage, FLAT_PAGES } from './data/pages.js';
+
+const BASE_URL = 'https://docs.dapplepot.com';
+
+const setMeta = (name, content, attr = 'name') => {
+  let el = document.querySelector(`meta[${attr}="${name}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attr, name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+};
+
+const setJsonLd = (id, data) => {
+  let el = document.querySelector(`script[data-ld="${id}"]`);
+  if (!el) {
+    el = document.createElement('script');
+    el.setAttribute('type', 'application/ld+json');
+    el.setAttribute('data-ld', id);
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(data);
+};
 
 const DocShell = () => {
   const { pathname } = useLocation();
@@ -13,6 +36,33 @@ const DocShell = () => {
   const page = findPage(pathname);
   const PageComponent = page.component;
   const headings = PageComponent.headings || [];
+
+  useEffect(() => {
+    const { title, description } = page.seo;
+    const url = `${BASE_URL}${pathname}`;
+
+    document.title = title;
+    setMeta('description', description);
+    setMeta('og:title', title, 'property');
+    setMeta('og:description', description, 'property');
+    setMeta('og:url', url, 'property');
+
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute('href', url);
+
+    setJsonLd('tech-article', {
+      '@context': 'https://schema.org',
+      '@type': 'TechArticle',
+      headline: title,
+      description: description,
+      url: url,
+      publisher: {
+        '@type': 'Organization',
+        name: 'DapplePot',
+        url: 'https://dapplepot.com',
+      },
+    });
+  }, [pathname, page.seo]);
 
   return (
     <>
