@@ -14,7 +14,7 @@ export const SECTIONS = [
         path: '/sdk',
         component: IntroPage,
         seo: {
-          title: 'DapplePot Python SDK · Developer Guide',
+          title: "DapplePot Python SDK · Developer's Guide",
           description: 'Runtime security, session replay, and real-time threat detection for AI agents — in a few lines of code. Drop-in integrations for Anthropic, OpenAI, LangChain, and LangGraph.',
         },
       },

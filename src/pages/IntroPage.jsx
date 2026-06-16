@@ -3,7 +3,7 @@ import Note      from '../components/Note.jsx';
 
 const IntroPage = () => (
   <>
-    <span className="eyebrow">Developer Guide</span>
+    <span className="eyebrow">Developer's Guide</span>
     <h1>DapplePot Python SDK</h1>
     <p className="lede">
       Runtime security, session replay, and real-time threat detection for AI
