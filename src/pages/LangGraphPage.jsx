@@ -54,6 +54,32 @@ result  = app.invoke(
       <code>app.invoke()</code> becomes one session.
     </p>
 
+    <h2 id="async-streaming">Async, streaming, and callback propagation</h2>
+    <p>
+      Streaming and async are handled <em>inside</em> LangGraph — DapplePot
+      sees the lifecycle events, not the raw stream. <code>llm_end</code>{' '}
+      fires with the fully accumulated response for streamed nodes.
+    </p>
+
+    <Note tone="warn" title="Async ainvoke / astream — thread callbacks explicitly">
+      In async LangGraph (<code>app.ainvoke()</code>,{' '}
+      <code>app.astream()</code>), the framework does not always propagate
+      callbacks to child runs automatically. Always pass the handler
+      explicitly via the run config:
+    </Note>
+
+    <CodeBlock language="python">{`handler = dp.callback_handler(user_context_id="user_42")
+
+result = await app.ainvoke(
+    {"messages": [HumanMessage(content="Hello!")]},
+    config={"callbacks": [handler]},   # required for async
+)`}</CodeBlock>
+
+    <p>
+      If your trace shows <code>session_start</code> followed by silence
+      in an async graph, this is almost always the cause.
+    </p>
+
     <h2 id="multi-node">Multi-node pipelines</h2>
     <p>
       Every node fires its own <code>node_start</code> / <code>node_end</code>{' '}
@@ -131,23 +157,47 @@ app = graph.compile()`}</CodeBlock>
         return {"messages": [HumanMessage(content="I'm having trouble — please try again.")]}`}</CodeBlock>
 
     <h3 id="blocked">Handling blocked calls</h3>
+    <p>
+      Catch <code>DapplePotBlockedError</code> <strong>inside each
+      node</strong> — graph nodes are independent, so catching the block
+      at the root would terminate the run unnecessarily. The interceptor
+      raises from inside whichever node was making the LLM or tool call.
+      <code>DapplePotSessionTerminatedError</code> goes at the root.
+    </p>
+
     <CodeBlock language="python">{`from dapplepot_sdk import DapplePotBlockedError, DapplePotSessionTerminatedError
 
+# Pattern 1 — inside each node, catch and fall back
+def agent_node(state):
+    try:
+        return {"messages": [llm.invoke(state["messages"])]}
+    except DapplePotBlockedError as exc:
+        # LLM call inside this node was blocked — return a safe message
+        return {"messages": [AIMessage(content=f"[Blocked: {exc.signal}]")]}
+
+# Pattern 2 — at the root, only handle full-session termination
 try:
     app.invoke(initial_state, config={"callbacks": [handler]})
-except DapplePotBlockedError as exc:
-    print("Blocked:", exc.signal, exc.reason)
 except DapplePotSessionTerminatedError:
-    print("Session terminated by security policy")`}</CodeBlock>
+    print("Session terminated by security policy")
+    # No further invocations allowed on this handler`}</CodeBlock>
+
+    <p>
+      Both exceptions carry <code>.session_id</code> for cross-referencing
+      against the dashboard. <code>DapplePotBlockedError</code> also has{' '}
+      <code>.signal</code> (the sub-check id, e.g. <code>PI-01a</code>) and{' '}
+      <code>.reason</code> for logging.
+    </p>
   </>
 );
 
 LangGraphPage.headings = [
-  { id: 'initialize',  label: 'Initialize' },
-  { id: 'usage',       label: 'Usage' },
-  { id: 'multi-node',  label: 'Multi-node pipelines' },
-  { id: 'tool-calls',  label: 'Tool calls — ToolNode' },
-  { id: 'errors',      label: 'Error events' },
+  { id: 'initialize',       label: 'Initialize' },
+  { id: 'usage',            label: 'Usage' },
+  { id: 'async-streaming',  label: 'Async, streaming, and callback propagation' },
+  { id: 'multi-node',       label: 'Multi-node pipelines' },
+  { id: 'tool-calls',       label: 'Tool calls — ToolNode' },
+  { id: 'errors',           label: 'Error events' },
 ];
 
 export default LangGraphPage;

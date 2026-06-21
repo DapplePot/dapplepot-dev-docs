@@ -45,6 +45,81 @@ with dp.session(user_context_id="user_123"):
         resp = client.chat.completions.create(model="gpt-4o", messages=history)
         history.append({"role": "assistant", "content": resp.choices[0].message.content})`}</CodeBlock>
 
+    <h2 id="async-streaming">Sync, async, and streaming</h2>
+    <p>
+      <code>dp.instrument_openai()</code> patches all four variants in one
+      call — sync, async, sync streaming, and async streaming. No extra
+      setup, no per-call wrapping. Tool calls inside any variant are
+      auto-traced.
+    </p>
+
+    <h3 id="async">Async</h3>
+    <CodeBlock language="python">{`import asyncio
+import openai
+from dapplepot_sdk import DapplePot
+
+dp = DapplePot(sdk_key="dp_sk_...", tenant_id="...", agent_id="...",
+               ingest_url="https://ingest.dapplepot.com")
+dp.instrument_openai()
+
+client = openai.AsyncOpenAI(api_key="...")
+
+async def chat():
+    with dp.session(user_context_id="user_123"):
+        resp = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": "Hello!"}],
+        )
+
+asyncio.run(chat())`}</CodeBlock>
+
+    <h3 id="streaming-sync">Sync streaming</h3>
+    <CodeBlock language="python">{`with dp.session(user_context_id="user_123"):
+    stream = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": "Tell me a story."}],
+        stream=True,
+    )
+    for chunk in stream:
+        delta = chunk.choices[0].delta.content if chunk.choices else None
+        if delta:
+            print(delta, end="", flush=True)`}</CodeBlock>
+
+    <p>
+      <code>llm_end</code> fires once, at stream close, with the fully
+      accumulated completion. <code>tool_start</code> fires at the same
+      moment if the streamed response carried tool calls. The streamed{' '}
+      <code>llm_end</code> event payload carries{' '}
+      <code>streamed: true</code>; the dashboard renders a small "streamed"
+      badge on those rows.
+    </p>
+
+    <h3 id="streaming-async">Async streaming</h3>
+    <CodeBlock language="python">{`async def chat():
+    with dp.session(user_context_id="user_123"):
+        stream = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": "Tell me a story."}],
+            stream=True,
+        )
+        async for chunk in stream:
+            delta = chunk.choices[0].delta.content if chunk.choices else None
+            if delta:
+                print(delta, end="", flush=True)`}</CodeBlock>
+
+    <Note tone="info" title="Output-content detection on streamed responses">
+      Output-content checks (PII leak, secret exfiltration) fire from{' '}
+      <code>llm_end</code> — for streamed responses, that happens after the
+      stream has closed and your code has already iterated every chunk.
+      The check still runs and a finding still lands on the timeline, but
+      it cannot retroactively prevent your code from receiving the streamed
+      content. Use <code>stream=False</code> on endpoints where real-time
+      output blocking is required. Input-side checks (prompt injection on{' '}
+      <code>llm_start</code>) and tool-execution checks (on{' '}
+      <code>tool_start</code>) still block in real time for streamed
+      responses.
+    </Note>
+
     <h2 id="nodes">Nodes</h2>
     <p>
       Use <code>dp.node()</code> inside a session to wrap any named step into
@@ -161,16 +236,57 @@ with dp.session(user_context_id="user_123"):
 
     client.chat.completions.create(...)        # retry
 # → session_end fires normally`}</CodeBlock>
+
+    <h3 id="blocked">Handling blocked calls</h3>
+    <p>
+      Security checks configured with the <code>block_call</code> action
+      raise <code>DapplePotBlockedError</code> from the LLM/tool call site —
+      catch it close to the call so a fallback can return and the session
+      continues. <code>terminate_session</code> raises{' '}
+      <code>DapplePotSessionTerminatedError</code>; catch it at the outer
+      level to exit the conversation gracefully.
+    </p>
+
+    <CodeBlock language="python">{`from dapplepot_sdk import (
+    DapplePot,
+    DapplePotBlockedError,
+    DapplePotSessionTerminatedError,
+)
+
+try:
+    with dp.session():
+        try:
+            resp = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": user_input}],
+            )
+        except DapplePotBlockedError as exc:
+            # Single call blocked — log and recover with a fallback.
+            print("Blocked:", exc.signal, exc.reason, exc.session_id)
+            resp = "[Response blocked by security policy]"
+except DapplePotSessionTerminatedError:
+    # Whole session terminated — exit the conversation.
+    # The interceptor already emitted session_error before raising.
+    print("Session terminated by security policy")`}</CodeBlock>
+
+    <p>
+      The <code>DapplePotBlockedError</code> carries three useful
+      attributes: <code>.signal</code> (sub-check id like{' '}
+      <code>PI-01a</code>), <code>.reason</code> (human-readable
+      explanation), and <code>.session_id</code> (for cross-referencing
+      against the dashboard).
+    </p>
   </>
 );
 
 OpenAIPage.headings = [
-  { id: 'initialize',  label: 'Initialize' },
-  { id: 'single-turn', label: 'Single-turn usage' },
-  { id: 'multi-turn',  label: 'Multi-turn usage' },
-  { id: 'nodes',       label: 'Nodes' },
-  { id: 'tool-calls',  label: 'Tool calls' },
-  { id: 'errors',      label: 'Error events' },
+  { id: 'initialize',       label: 'Initialize' },
+  { id: 'single-turn',      label: 'Single-turn usage' },
+  { id: 'multi-turn',       label: 'Multi-turn usage' },
+  { id: 'async-streaming',  label: 'Sync, async, and streaming' },
+  { id: 'nodes',            label: 'Nodes' },
+  { id: 'tool-calls',       label: 'Tool calls' },
+  { id: 'errors',           label: 'Error events' },
 ];
 
 export default OpenAIPage;

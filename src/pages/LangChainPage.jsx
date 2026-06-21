@@ -51,6 +51,33 @@ result  = chain.invoke({"input": "Hello!"}, config={"callbacks": [handler]})`}</
       logical session.
     </Note>
 
+    <h2 id="async-streaming">Async, streaming, and callback propagation</h2>
+    <p>
+      Streaming and async are handled <em>inside</em> LangChain — DapplePot
+      sees the lifecycle events (<code>on_chat_model_start</code>,{' '}
+      <code>on_llm_end</code>), not the raw stream. You don't need to do
+      anything different for streaming chains; <code>llm_start</code> and{' '}
+      <code>llm_end</code> fire normally with the accumulated response.
+    </p>
+
+    <Note tone="warn" title="Async callback propagation — must thread through RunnableConfig">
+      In async LangChain (<code>ainvoke</code>, <code>astream</code>) the
+      framework does not always propagate callbacks to child runs
+      automatically. Always pass the handler explicitly via the run config:
+    </Note>
+
+    <CodeBlock language="python">{`handler = dp.callback_handler(user_context_id="user_42")
+
+result = await chain.ainvoke(
+    {"input": "Hello"},
+    config={"callbacks": [handler]},   # required for async
+)`}</CodeBlock>
+
+    <p>
+      If your trace shows <code>session_start</code> followed by silence
+      in an async chain, this is almost always the cause.
+    </p>
+
     <h2 id="nodes">Nodes — automatic</h2>
     <p>
       Each named LCEL component (prompt templates, retrieval lambdas, output
@@ -130,26 +157,60 @@ except Exception:
     <p>
       Security checks raise <code>DapplePotBlockedError</code> /{' '}
       <code>DapplePotSessionTerminatedError</code> from inside the chain.
-      Catch them around your <code>invoke()</code>.
+      The two have different catch sites:
     </p>
+
+    <ul>
+      <li>
+        <code>DapplePotBlockedError</code> — catch <strong>inside each
+        pipeline step</strong> so the step can return a graceful fallback
+        and the chain continues to completion. DapplePot intercepts at
+        both <code>on_chat_model_start</code> and <code>on_tool_start</code>,
+        so either an LLM call or a tool call can raise it.
+      </li>
+      <li>
+        <code>DapplePotSessionTerminatedError</code> — catch at the{' '}
+        <strong>root</strong>, around <code>chain.invoke()</code>. The
+        interceptor already emitted <code>session_error</code> before
+        raising; you only need to exit gracefully.
+      </li>
+    </ul>
 
     <CodeBlock language="python">{`from dapplepot_sdk import DapplePotBlockedError, DapplePotSessionTerminatedError
 
+# Pattern 1 — inside each step, catch and fall back
+def classify_step(input, config):
+    try:
+        return llm.invoke([SystemMessage(...), HumanMessage(content=input["query"])],
+                          config=config)
+    except DapplePotBlockedError as exc:
+        # Step blocked — return a safe fallback so the chain continues
+        return {**input, "intent": "NONE"}
+
+# Pattern 2 — at the root, only handle full-session termination
 try:
     chain.invoke({"input": "..."}, config={"callbacks": [handler]})
-except DapplePotBlockedError as exc:
-    print("Blocked:", exc.signal, exc.reason)
 except DapplePotSessionTerminatedError:
-    print("Session terminated by security policy")`}</CodeBlock>
+    print("Session terminated by security policy")
+    # The session is permanently closed; no further invocations allowed`}</CodeBlock>
+
+    <p>
+      The <code>DapplePotBlockedError</code> carries{' '}
+      <code>.signal</code>, <code>.reason</code>, and{' '}
+      <code>.session_id</code> — log <code>.signal</code> (e.g.{' '}
+      <code>PI-01a</code>) in your fallback so the trace is searchable
+      against the dashboard.
+    </p>
   </>
 );
 
 LangChainPage.headings = [
-  { id: 'initialize', label: 'Initialize' },
-  { id: 'usage',      label: 'Usage' },
-  { id: 'nodes',      label: 'Nodes — automatic' },
-  { id: 'tool-calls', label: 'Tool calls' },
-  { id: 'errors',     label: 'Error events' },
+  { id: 'initialize',       label: 'Initialize' },
+  { id: 'usage',            label: 'Usage' },
+  { id: 'async-streaming',  label: 'Async, streaming, and callback propagation' },
+  { id: 'nodes',            label: 'Nodes — automatic' },
+  { id: 'tool-calls',       label: 'Tool calls' },
+  { id: 'errors',           label: 'Error events' },
 ];
 
 export default LangChainPage;

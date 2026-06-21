@@ -69,6 +69,95 @@ with dp.session(user_context_id="user_123"):
         )
         history.append({"role": "assistant", "content": resp.content[0].text})`}</CodeBlock>
 
+    <h2 id="async-streaming">Sync, async, and streaming</h2>
+    <p>
+      <code>dp.instrument_anthropic()</code> patches every variant in one
+      call — sync and async <code>messages.create()</code>, plus both
+      streaming surfaces (<code>stream=True</code> and the{' '}
+      <code>messages.stream()</code> context manager) in their sync and
+      async forms. Tool calls inside any variant are auto-traced.
+    </p>
+
+    <h3 id="async">Async</h3>
+    <CodeBlock language="python">{`import asyncio
+import anthropic
+from dapplepot_sdk import DapplePot
+
+dp = DapplePot(sdk_key="dp_sk_...", tenant_id="...", agent_id="...",
+               ingest_url="https://ingest.dapplepot.com")
+dp.instrument_anthropic()
+
+client = anthropic.AsyncAnthropic(api_key="...")
+
+async def chat():
+    with dp.session(user_context_id="user_123"):
+        resp = await client.messages.create(
+            model="claude-opus-4-7",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": "Hello!"}],
+        )
+
+asyncio.run(chat())`}</CodeBlock>
+
+    <h3 id="streaming-create">Streaming via stream=True</h3>
+    <CodeBlock language="python">{`with dp.session(user_context_id="user_123"):
+    stream = client.messages.create(
+        model="claude-opus-4-7",
+        max_tokens=512,
+        messages=[{"role": "user", "content": "Tell me a story."}],
+        stream=True,
+    )
+    for event in stream:
+        if event.type == "content_block_delta" and event.delta.type == "text_delta":
+            print(event.delta.text, end="", flush=True)`}</CodeBlock>
+
+    <h3 id="streaming-context">Streaming via messages.stream()</h3>
+    <p>
+      Anthropic's <code>messages.stream()</code> context manager is fully
+      supported — DapplePot wraps the <code>MessageStreamManager</code> so
+      the trace fires at <code>__exit__</code> time.
+    </p>
+    <CodeBlock language="python">{`with dp.session(user_context_id="user_123"):
+    with client.messages.stream(
+        model="claude-opus-4-7",
+        max_tokens=512,
+        messages=[{"role": "user", "content": "Tell me a story."}],
+    ) as stream:
+        for text in stream.text_stream:
+            print(text, end="", flush=True)`}</CodeBlock>
+
+    <p>
+      <code>llm_end</code> fires once, at stream close, with the fully
+      accumulated completion. <code>tool_start</code> fires at the same
+      moment if the streamed response carried a <code>tool_use</code>{' '}
+      block. The streamed <code>llm_end</code> payload carries{' '}
+      <code>streamed: true</code>; the dashboard renders a small "streamed"
+      badge on those rows.
+    </p>
+
+    <h3 id="streaming-async">Async streaming</h3>
+    <CodeBlock language="python">{`async def chat():
+    with dp.session(user_context_id="user_123"):
+        async with client.messages.stream(
+            model="claude-opus-4-7",
+            max_tokens=512,
+            messages=[{"role": "user", "content": "Tell me a story."}],
+        ) as stream:
+            async for text in stream.text_stream:
+                print(text, end="", flush=True)`}</CodeBlock>
+
+    <Note tone="info" title="Output-content detection on streamed responses">
+      Output-content checks (PII leak, secret exfiltration) fire from{' '}
+      <code>llm_end</code> — for streamed responses, that happens after the
+      stream has closed and your code has already iterated every chunk.
+      The check still runs and a finding still lands on the timeline, but
+      it cannot retroactively prevent your code from receiving the streamed
+      content. Use non-streaming <code>messages.create()</code> on
+      endpoints where real-time output blocking is required. Input-side
+      checks (prompt injection on <code>llm_start</code>) and tool-execution
+      checks (on <code>tool_start</code>) still block in real time.
+    </Note>
+
     <h2 id="nodes">Nodes</h2>
     <p>
       Use <code>dp.node()</code> inside a session to wrap any named step into
@@ -191,8 +280,12 @@ with dp.session(user_context_id="user_123"):
 
     <h3 id="blocked">Handling blocked calls</h3>
     <p>
-      Security checks configured with the <code>block_call</code> or{' '}
-      <code>terminate_session</code> action raise exceptions you can catch.
+      Security checks configured with the <code>block_call</code> action
+      raise <code>DapplePotBlockedError</code> from the LLM/tool call site —
+      catch it close to the call so a fallback can return and the session
+      continues. <code>terminate_session</code> raises{' '}
+      <code>DapplePotSessionTerminatedError</code>; catch it at the outer
+      level to exit the conversation gracefully.
     </p>
 
     <CodeBlock language="python">{`from dapplepot_sdk import (
@@ -203,21 +296,39 @@ with dp.session(user_context_id="user_123"):
 
 try:
     with dp.session():
-        client.messages.create(...)
-except DapplePotBlockedError as exc:
-    print("Blocked:", exc.signal, exc.reason, exc.session_id)
+        try:
+            resp = client.messages.create(
+                model="claude-opus-4-7",
+                max_tokens=1024,
+                messages=[{"role": "user", "content": user_input}],
+            )
+        except DapplePotBlockedError as exc:
+            # Single call blocked — log and recover with a fallback.
+            print("Blocked:", exc.signal, exc.reason, exc.session_id)
+            resp = "[Response blocked by security policy]"
 except DapplePotSessionTerminatedError:
+    # Whole session terminated — exit the conversation.
+    # The interceptor already emitted session_error before raising.
     print("Session terminated by security policy")`}</CodeBlock>
+
+    <p>
+      The <code>DapplePotBlockedError</code> carries three useful
+      attributes: <code>.signal</code> (sub-check id like{' '}
+      <code>PI-01a</code>), <code>.reason</code> (human-readable
+      explanation), and <code>.session_id</code> (for cross-referencing
+      against the dashboard).
+    </p>
   </>
 );
 
 AnthropicPage.headings = [
-  { id: 'initialize',  label: 'Initialize' },
-  { id: 'single-turn', label: 'Single-turn usage' },
-  { id: 'multi-turn',  label: 'Multi-turn usage' },
-  { id: 'nodes',       label: 'Nodes' },
-  { id: 'tool-calls',  label: 'Tool calls' },
-  { id: 'errors',      label: 'Error events' },
+  { id: 'initialize',       label: 'Initialize' },
+  { id: 'single-turn',      label: 'Single-turn usage' },
+  { id: 'multi-turn',       label: 'Multi-turn usage' },
+  { id: 'async-streaming',  label: 'Sync, async, and streaming' },
+  { id: 'nodes',            label: 'Nodes' },
+  { id: 'tool-calls',       label: 'Tool calls' },
+  { id: 'errors',           label: 'Error events' },
 ];
 
 export default AnthropicPage;

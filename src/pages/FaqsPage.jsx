@@ -104,6 +104,97 @@ const FaqsPage = () => (
       </p>
     </FaqItem>
 
+    <FaqItem id="async-supported" q="Does the SDK support async OpenAI and Anthropic clients?">
+      <p>
+        Yes. <code>dp.instrument_openai()</code> and{' '}
+        <code>dp.instrument_anthropic()</code> patch both sync and async
+        client variants in one call. Use{' '}
+        <code>openai.AsyncOpenAI(...)</code> or{' '}
+        <code>anthropic.AsyncAnthropic(...)</code> as you normally would.
+      </p>
+    </FaqItem>
+
+    <FaqItem id="streaming-supported" q="Does the SDK support streaming?">
+      <p>
+        Yes — for OpenAI <code>stream=True</code> on both sync and async
+        clients, and for Anthropic both{' '}
+        <code>messages.create(stream=True)</code> and the{' '}
+        <code>messages.stream()</code> context manager (sync and async).{' '}
+        <code>llm_end</code> fires at stream close with the fully
+        accumulated completion and <code>streamed: true</code> on the
+        payload.
+      </p>
+    </FaqItem>
+
+    <FaqItem id="streaming-empty-completion" q="Why is llm_end.completion empty on a tool-calling streamed response?">
+      <p>
+        Because the model's streamed response was entirely{' '}
+        <code>tool_calls</code> / <code>tool_use</code> blocks with no
+        text content — same as the non-streaming behaviour. The natural-
+        language final answer arrives in the <em>next</em>{' '}
+        <code>create()</code> call after you feed the tool result back.{' '}
+        That second call's <code>llm_end</code> carries the completion
+        text.
+      </p>
+    </FaqItem>
+
+    <FaqItem id="async-langgraph-silence" q="Why does my async LangGraph session show only session_start?">
+      <p>
+        LangChain does not auto-propagate callbacks to child runs in async
+        mode. Thread the handler through the run config explicitly:
+      </p>
+      <CodeBlock language="python">{`handler = dp.callback_handler(user_context_id="user_42")
+await app.ainvoke(state, config={"callbacks": [handler]})`}</CodeBlock>
+    </FaqItem>
+
+    <FaqItem id="streaming-realtime-block" q="Can the SDK block streamed output in real time?">
+      <p>
+        Not in the v0.1 release. Output-content detectors (PII leak, secret
+        exfiltration) fire from <code>llm_end</code> — for streamed
+        responses, that happens after the stream has closed and your code
+        has already iterated every chunk. The finding still lands on the
+        timeline but cannot retroactively prevent your code from receiving
+        the streamed content. Use <code>stream=False</code> on endpoints
+        where real-time output blocking is required. Input-side checks
+        (prompt injection) and tool-execution checks{' '}
+        <em>do</em> still block in real time for streamed responses.
+      </p>
+    </FaqItem>
+
+    <FaqItem id="unsupported-providers" q="What providers and frameworks aren't supported yet?">
+      <p>
+        OpenAI Responses API / Assistants API / Agents SDK, Anthropic
+        Bedrock / Vertex, other LLM providers (Gemini, Mistral, Cohere,
+        Ollama, LiteLLM, OpenRouter), and other agent frameworks (CrewAI,
+        AutoGen, PydanticAI, LlamaIndex, smolagents). The full support
+        matrix lives in the{' '}
+        <a href="https://github.com/dapplepot/dapplepot-sdk#supported-integrations--known-limitations" target="_blank" rel="noreferrer">
+          SDK README
+        </a>
+        . If you need one of these, open an issue with your use case — it
+        helps us prioritise.
+      </p>
+    </FaqItem>
+
+    <FaqItem id="exception-catch-sites" q="What exceptions can DapplePot raise and where should I catch them?">
+      <p>Two exception types, two catch sites:</p>
+      <ul>
+        <li>
+          <code>DapplePotBlockedError</code> — single call blocked. Has{' '}
+          <code>.signal</code>, <code>.reason</code>,{' '}
+          <code>.session_id</code>. Catch <strong>close to the call
+          site</strong> (each step / each node) so the rest of the
+          conversation continues with a fallback.
+        </li>
+        <li>
+          <code>DapplePotSessionTerminatedError</code> — whole session
+          terminated by policy. Catch <strong>at the root</strong> and
+          exit the conversation. The interceptor already emitted{' '}
+          <code>session_error</code> before raising.
+        </li>
+      </ul>
+    </FaqItem>
+
     <h2 id="errors">Errors</h2>
 
     <FaqItem id="catch-llm" q="Does catching an LLM error inside dp.session() stop the session?">
