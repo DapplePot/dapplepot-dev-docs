@@ -21,10 +21,8 @@ const LangChainPage = () => (
     <CodeBlock language="python">{`from dapplepot_sdk import DapplePot
 
 dp = DapplePot(
-    sdk_key    = "dp_sk_...",
-    tenant_id  = "your-tenant-id",
-    agent_id   = "your-agent-id",
-    ingest_url = "https://ingest.dapplepot.com",
+    sdk_key  = "dp_sk_...",
+    agent_id = "your-agent-id",
 )`}</CodeBlock>
 
     <h2 id="usage">Usage</h2>

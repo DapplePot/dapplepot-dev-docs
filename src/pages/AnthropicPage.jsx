@@ -22,10 +22,8 @@ const AnthropicPage = () => (
 from dapplepot_sdk import DapplePot
 
 dp = DapplePot(
-    sdk_key    = "dp_sk_...",
-    tenant_id  = "your-tenant-id",
-    agent_id   = "your-agent-id",
-    ingest_url = "https://ingest.dapplepot.com",
+    sdk_key  = "dp_sk_...",
+    agent_id = "your-agent-id",
 )
 dp.instrument_anthropic()
 
@@ -83,8 +81,7 @@ with dp.session(user_context_id="user_123"):
 import anthropic
 from dapplepot_sdk import DapplePot
 
-dp = DapplePot(sdk_key="dp_sk_...", tenant_id="...", agent_id="...",
-               ingest_url="https://ingest.dapplepot.com")
+dp = DapplePot(sdk_key="dp_sk_...", agent_id="your-agent-id")
 dp.instrument_anthropic()
 
 client = anthropic.AsyncAnthropic(api_key="...")

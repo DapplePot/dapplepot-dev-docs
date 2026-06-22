@@ -49,10 +49,8 @@ pip install "dapplepot-sdk[all]"          # Everything`}</CodeBlock>
 from dapplepot_sdk import DapplePot
 
 dp = DapplePot(
-    sdk_key    = "dp_sk_...",
-    tenant_id  = "your-tenant-id",
-    agent_id   = "your-agent-id",
-    ingest_url = "https://ingest.dapplepot.com",
+    sdk_key  = "dp_sk_...",
+    agent_id = "your-agent-id",
 )
 dp.instrument_anthropic()
 
@@ -64,9 +62,8 @@ with dp.session(user_context_id="user_123"):
     )`}</CodeBlock>
 
     <Note tone="info" title="Credentials">
-      Grab <code>sdk_key</code>, <code>tenant_id</code>, <code>agent_id</code>,
-      and <code>ingest_url</code> from the DapplePot dashboard. Each framework
-      page in this guide assumes you already have them.
+      Grab <code>sdk_key</code> and <code>agent_id</code> from the DapplePot
+      dashboard. Each framework page in this guide assumes you already have them.
     </Note>
 
     <h2 id="next">Where next</h2>

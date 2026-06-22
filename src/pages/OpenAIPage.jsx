@@ -21,10 +21,8 @@ const OpenAIPage = () => (
 from dapplepot_sdk import DapplePot
 
 dp = DapplePot(
-    sdk_key    = "dp_sk_...",
-    tenant_id  = "your-tenant-id",
-    agent_id   = "your-agent-id",
-    ingest_url = "https://ingest.dapplepot.com",
+    sdk_key  = "dp_sk_...",
+    agent_id = "your-agent-id",
 )
 dp.instrument_openai()
 
@@ -58,8 +56,7 @@ with dp.session(user_context_id="user_123"):
 import openai
 from dapplepot_sdk import DapplePot
 
-dp = DapplePot(sdk_key="dp_sk_...", tenant_id="...", agent_id="...",
-               ingest_url="https://ingest.dapplepot.com")
+dp = DapplePot(sdk_key="dp_sk_...", agent_id="your-agent-id")
 dp.instrument_openai()
 
 client = openai.AsyncOpenAI(api_key="...")

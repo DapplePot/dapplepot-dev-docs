@@ -23,7 +23,7 @@ const FaqsPage = () => (
 
     <h2 id="setup">Setup &amp; credentials</h2>
 
-    <FaqItem id="get-credentials" q="Where do I get sdk_key, tenant_id, and agent_id?">
+    <FaqItem id="get-credentials" q="Where do I get sdk_key and agent_id?">
       <p>
         From the DapplePot dashboard. Create a project → create an agent →
         the credentials block appears at the top of the agent page.
