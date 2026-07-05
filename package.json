@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/generate-api-reference.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/generate-api-reference.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

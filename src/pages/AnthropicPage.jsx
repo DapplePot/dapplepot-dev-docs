@@ -29,6 +29,12 @@ dp.instrument_anthropic()
 
 client = anthropic.Anthropic(api_key="...")`}</CodeBlock>
 
+    <Note tone="info" title="Full signature">
+      See the <a href="/sdk/reference/api">API Reference</a> for every
+      constructor option, including sampling, PII scrubbing, and buffer
+      tuning.
+    </Note>
+
     <Note tone="info" title="Standard anthropic package">
       The <code>anthropic</code> package is unmodified — upgrade it freely
       without coordinating with DapplePot releases.

@@ -28,6 +28,12 @@ dp.instrument_openai()
 
 client = openai.OpenAI(api_key="...")`}</CodeBlock>
 
+    <Note tone="info" title="Full signature">
+      See the <a href="/sdk/reference/api">API Reference</a> for every
+      constructor option, including sampling, PII scrubbing, and buffer
+      tuning.
+    </Note>
+
     <h2 id="single-turn">Single-turn usage</h2>
     <CodeBlock language="python">{`with dp.session(user_context_id="user_123"):
     response = client.chat.completions.create(

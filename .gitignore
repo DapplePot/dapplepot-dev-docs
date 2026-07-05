@@ -6,3 +6,5 @@ dist
 .env
 .env.local
 .firebase/
+.venv-docgen/
+src/data/apiReference.generated.json

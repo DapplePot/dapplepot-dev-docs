@@ -25,6 +25,12 @@ dp = DapplePot(
     agent_id = "your-agent-id",
 )`}</CodeBlock>
 
+    <Note tone="info" title="Full signature">
+      See the <a href="/sdk/reference/api">API Reference</a> for every
+      constructor option, including sampling, PII scrubbing, and buffer
+      tuning.
+    </Note>
+
     <h2 id="usage">Usage</h2>
     <p>
       Get a handler with <code>dp.callback_handler()</code> and pass it in

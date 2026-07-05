@@ -63,7 +63,9 @@ with dp.session(user_context_id="user_123"):
 
     <Note tone="info" title="Credentials">
       Grab <code>sdk_key</code> and <code>agent_id</code> from the DapplePot
-      dashboard. Each framework page in this guide assumes you already have them.
+      dashboard. Each framework page in this guide assumes you already have
+      them — see the <a href="/sdk/reference/api">API Reference</a> for every
+      constructor option.
     </Note>
 
     <h2 id="next">Where next</h2>

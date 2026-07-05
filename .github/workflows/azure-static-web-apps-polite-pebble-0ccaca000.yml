@@ -19,6 +19,18 @@ jobs:
         with:
           submodules: true
           lfs: false
+      # NOTE: Azure/static-web-apps-deploy runs `npm run build` inside its own
+      # Oryx-managed sandbox, which triggers our `prebuild` hook
+      # (scripts/generate-api-reference.mjs). This step just ensures a
+      # python3 is on the runner's PATH beforehand; if Oryx's sandbox turns
+      # out not to inherit it, fall back to committing
+      # src/data/apiReference.generated.json for this pipeline specifically
+      # (see dapplepot-internal-docs/sdk_internal_docs.md, "Dev-docs
+      # auto-sync operations").
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1

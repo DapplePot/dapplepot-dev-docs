@@ -1,9 +1,10 @@
-import IntroPage      from '../pages/IntroPage.jsx';
-import AnthropicPage  from '../pages/AnthropicPage.jsx';
-import OpenAIPage     from '../pages/OpenAIPage.jsx';
-import LangChainPage  from '../pages/LangChainPage.jsx';
-import LangGraphPage  from '../pages/LangGraphPage.jsx';
-import FaqsPage       from '../pages/FaqsPage.jsx';
+import IntroPage         from '../pages/IntroPage.jsx';
+import AnthropicPage     from '../pages/AnthropicPage.jsx';
+import OpenAIPage        from '../pages/OpenAIPage.jsx';
+import LangChainPage     from '../pages/LangChainPage.jsx';
+import LangGraphPage     from '../pages/LangGraphPage.jsx';
+import FaqsPage          from '../pages/FaqsPage.jsx';
+import ApiReferencePage  from '../pages/ApiReferencePage.jsx';
 
 export const SECTIONS = [
   {
@@ -57,6 +58,20 @@ export const SECTIONS = [
         seo: {
           title: 'LangGraph Integration · DapplePot Python SDK',
           description: 'Monitor LangGraph agents with DapplePot. Each graph node becomes a named trace pair, giving full visibility and security across every step.',
+        },
+      },
+    ],
+  },
+  {
+    title: 'Reference',
+    pages: [
+      {
+        label: 'API Reference',
+        path: '/sdk/reference/api',
+        component: ApiReferencePage,
+        seo: {
+          title: 'API Reference · DapplePot Python SDK',
+          description: 'Auto-generated API reference for the DapplePot Python SDK, sourced directly from the package docstrings — always in sync with the installed version.',
         },
       },
     ],
