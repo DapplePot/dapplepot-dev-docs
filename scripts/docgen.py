@@ -22,7 +22,7 @@ import sys
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
 
-from docstring_parser import parse as _parse_docstring
+from docstring_parser.google import parse as _parse_docstring
 
 import dapplepot_sdk
 import dapplepot_sdk.scrubbers as scrubbers
