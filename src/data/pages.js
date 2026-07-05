@@ -6,6 +6,7 @@ import LangGraphPage           from '../pages/LangGraphPage.jsx';
 import FaqsPage                from '../pages/FaqsPage.jsx';
 import ApiReferencePage        from '../pages/ApiReferencePage.jsx';
 import ProductionChecklistPage from '../pages/ProductionChecklistPage.jsx';
+import PricingPage             from '../pages/PricingPage.jsx';
 
 export const SECTIONS = [
   {
@@ -101,6 +102,15 @@ export const SECTIONS = [
         seo: {
           title: 'FAQs · DapplePot Python SDK',
           description: 'Answers to common questions about installing, configuring, and using the DapplePot Python SDK for AI agent security monitoring.',
+        },
+      },
+      {
+        label: 'Pricing',
+        path: '/sdk/help/pricing',
+        component: PricingPage,
+        seo: {
+          title: 'Pricing · DapplePot Python SDK',
+          description: 'DapplePot pricing information.',
         },
       },
     ],

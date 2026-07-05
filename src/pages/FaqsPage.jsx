@@ -26,8 +26,10 @@ const FaqsPage = () => (
 
     <FaqItem id="get-credentials" q="Where do I get sdk_key and agent_id?">
       <p>
-        From the DapplePot dashboard. Create a project → create an agent →
-        the credentials block appears at the top of the agent page.
+        From the{' '}
+        <a href="https://app.dapplepot.com" target="_blank" rel="noopener noreferrer">DapplePot dashboard</a>.
+        Create a project → create an agent → the credentials block appears
+        at the top of the agent page.
       </p>
     </FaqItem>
 
@@ -223,9 +225,10 @@ await app.ainvoke(state, config={"callbacks": [handler]})`}</CodeBlock>
 
     <FaqItem id="checks-config" q="How do I change which security checks run?">
       <p>
-        In the DapplePot dashboard. The SDK fetches per-check configuration
-        at startup. Restart your agent after changing checks — there is no
-        live reload.
+        In the{' '}
+        <a href="https://app.dapplepot.com" target="_blank" rel="noopener noreferrer">DapplePot dashboard</a>.
+        The SDK fetches per-check configuration at startup. Restart your
+        agent after changing checks — there is no live reload.
       </p>
     </FaqItem>
 

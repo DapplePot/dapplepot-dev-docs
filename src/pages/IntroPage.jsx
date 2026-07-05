@@ -6,6 +6,23 @@ import Xref      from '../components/Xref.jsx';
 
 const { python, extras } = apiReference.requirements;
 
+const QUICKSTARTS = [
+  { label: 'Anthropic', path: '/sdk/agent-frameworks/anthropic', desc: 'Direct Anthropic SDK usage' },
+  { label: 'OpenAI', path: '/sdk/agent-frameworks/openai', desc: 'Direct OpenAI SDK usage' },
+  { label: 'LangChain', path: '/sdk/agent-frameworks/langchain', desc: 'Callback-based integration' },
+  { label: 'LangGraph', path: '/sdk/agent-frameworks/langgraph', desc: 'Callback-based integration' },
+];
+
+const QuickstartCard = ({ label, path, desc }) => (
+  <Link
+    to={path}
+    className="flex flex-col gap-1 rounded-lg border border-border p-4 no-underline transition-colors hover:border-accent hover:bg-accent-soft/30"
+  >
+    <span className="text-[14.5px] font-semibold text-ink">{label}</span>
+    <span className="text-[13px] text-muted">{desc}</span>
+  </Link>
+);
+
 const IntroPage = () => (
   <>
     <span className="eyebrow">Getting Started</span>
@@ -16,7 +33,18 @@ const IntroPage = () => (
       OpenAI, LangChain, and LangGraph.
     </p>
 
-    <h2 id="what-it-does">What the SDK does</h2>
+    <h2 id="quickstart">Quickstart</h2>
+    <p>Pick your framework to jump straight to its setup guide.</p>
+    <div className="my-5 grid grid-cols-2 gap-3 max-md:grid-cols-1">
+      {QUICKSTARTS.map((q) => <QuickstartCard key={q.path} {...q} />)}
+    </div>
+    <p>
+      Not yet supported: OpenAI Responses/Assistants/Agents API, Anthropic via
+      Bedrock/Vertex, other providers, and other agent frameworks — see the{' '}
+      <Link to="/sdk/help/faq#unsupported-providers">FAQ</Link> for the full list.
+    </p>
+
+    <h2 id="overview">Overview</h2>
     <p>
       The SDK instruments your agent and forwards structured events to the
       DapplePot ingest API. Twelve security sub-checks run synchronously on
@@ -33,6 +61,16 @@ const IntroPage = () => (
       <li>Pluggable PII scrubbing and key redaction</li>
     </ul>
 
+    <Note tone="info" title="How instrumentation works">
+      <Xref>dp.instrument_anthropic()</Xref> / <Xref>dp.instrument_openai()</Xref>{' '}
+      patch the vendor package once, globally, for the whole process — not
+      per-client-instance. Call it right after constructing{' '}
+      <Xref>DapplePot</Xref> and before creating your Anthropic/OpenAI client.{' '}
+      <Xref>dp.callback_handler()</Xref> works differently — it doesn't patch
+      anything; it returns an object you pass into LangChain/LangGraph's own
+      callback system, one per logical session.
+    </Note>
+
     <h2 id="install">Install</h2>
     <p>Install with the extras for the framework you use.</p>
 
@@ -45,7 +83,9 @@ pip install "dapplepot-sdk[all]"          # Everything`}</CodeBlock>
 
     <h2 id="thirty-second">30-second example</h2>
     <p>
-      Get credentials from the dashboard, then add three lines to your agent.
+      Get credentials from the{' '}
+      <a href="https://app.dapplepot.com" target="_blank" rel="noopener noreferrer">dashboard</a>,
+      then add three lines to your agent.
       This is the full minimal Anthropic setup — the same shape works for
       every framework.
     </p>
@@ -67,49 +107,11 @@ with dp.session(user_context_id="user_123"):
     )`}</CodeBlock>
 
     <Note tone="info" title="Credentials">
-      Grab <code>sdk_key</code> and <code>agent_id</code> from the DapplePot
-      dashboard. Each framework page in this guide assumes you already have
+      Grab <code>sdk_key</code> and <code>agent_id</code> from the{' '}
+      <a href="https://app.dapplepot.com" target="_blank" rel="noopener noreferrer">DapplePot dashboard</a>.
+      Each framework page in this guide assumes you already have
       them — see the <Link to="/sdk/reference/api">API Reference</Link> for every
       constructor option.
-    </Note>
-
-    <h2 id="integrations">Supported integrations</h2>
-    <table>
-      <thead>
-        <tr><th>Framework</th><th>Method</th><th>Behavior</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Anthropic</td>
-          <td><Xref>dp.instrument_anthropic()</Xref></td>
-          <td>Patches <code>messages.create()</code> in place</td>
-        </tr>
-        <tr>
-          <td>OpenAI</td>
-          <td><Xref>dp.instrument_openai()</Xref></td>
-          <td>Patches <code>chat.completions.create()</code> in place</td>
-        </tr>
-        <tr>
-          <td>LangChain / LangGraph</td>
-          <td><Xref>dp.callback_handler()</Xref></td>
-          <td>Returns a handler for <code>config={'{'}"callbacks": [...]{'}'}</code></td>
-        </tr>
-      </tbody>
-    </table>
-    <p>
-      Not yet supported: OpenAI Responses/Assistants/Agents API, Anthropic via
-      Bedrock/Vertex, other providers, and other agent frameworks — see the{' '}
-      <Link to="/sdk/help/faq#unsupported-providers">FAQ</Link> for the full list.
-    </p>
-
-    <Note tone="info" title="How instrumentation works">
-      <code>instrument_anthropic()</code> / <code>instrument_openai()</code>{' '}
-      patch the vendor package once, globally, for the whole process — not
-      per-client-instance. Call it right after constructing{' '}
-      <Xref>DapplePot</Xref> and before creating your Anthropic/OpenAI client.{' '}
-      <code>callback_handler()</code> works differently — it doesn't patch
-      anything; it returns an object you pass into LangChain/LangGraph's own
-      callback system, one per logical session.
     </Note>
 
     <h2 id="compatibility">Requirements &amp; compatibility</h2>
@@ -124,26 +126,15 @@ with dp.session(user_context_id="user_123"):
         ))}
       </tbody>
     </table>
-
-    <h2 id="next">Where next</h2>
-    <p>
-      Pick the framework you ship on and follow its dedicated guide. Each
-      page covers install, init, usage, tool calls, and error events in the
-      same order so you can flip between them. See{' '}
-      <Link to="/sdk/guides/production-checklist">Production Checklist</Link> for
-      credential handling, graceful shutdown, and PII scrubbing before you
-      ship.
-    </p>
   </>
 );
 
 IntroPage.headings = [
-  { id: 'what-it-does',   label: 'What the SDK does' },
+  { id: 'quickstart',     label: 'Quickstart' },
+  { id: 'overview',       label: 'Overview' },
   { id: 'install',        label: 'Install' },
   { id: 'thirty-second',  label: '30-second example' },
-  { id: 'integrations',   label: 'Supported integrations' },
   { id: 'compatibility',  label: 'Requirements & compatibility' },
-  { id: 'next',           label: 'Where next' },
 ];
 
 export default IntroPage;

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/dapplePotLogo.png';
 import { FaGithub, FaLinkedin, FaXTwitter } from 'react-icons/fa6';
 import SearchPalette from './SearchPalette.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 
 const TopBar = ({ onMenuClick }) => (
   <header className="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-md">
@@ -27,6 +28,7 @@ const TopBar = ({ onMenuClick }) => (
 
       <nav className="flex items-center gap-3">
         <SearchPalette />
+        <ThemeToggle />
         <a
           href="https://github.com/DapplePot/dapplepot-sdk"
           target="_blank"

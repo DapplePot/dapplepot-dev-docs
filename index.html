@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Set the theme before React mounts / first paint, so there's no
+      // flash of the wrong theme. Explicit choice (localStorage) wins;
+      // otherwise falls back to the visitor's OS preference.
+      (function () {
+        var stored = localStorage.getItem('dp-theme');
+        var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <meta name="description" content="Runtime security, session replay, and real-time threat detection for AI agents — in a few lines of code. Drop-in integrations for Anthropic, OpenAI, LangChain, and LangGraph." />
     <title>DapplePot Python SDK · Developer's Guide</title>
 

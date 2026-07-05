@@ -24,8 +24,42 @@
   --color-warning:      #f59e0b;
   --color-danger:       #ef4444;
 
+  --color-code-bg:      #eaf2fb;   /* plain inline <code> — deliberately not
+                                       the accent color, see .prose a code */
+  --color-code-ink:     #2563a8;
+
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ────────────────────────────────────────────────────────────
+   Dark theme — same token names, dark values. Applied via
+   <html data-theme="dark">, set by ThemeToggle (and, before React
+   mounts, by the inline script in index.html to avoid a flash of the
+   wrong theme). Defaults to the visitor's OS preference the first time.
+   ──────────────────────────────────────────────────────────── */
+:root[data-theme='dark'] {
+  --color-bg:           #0b0d12;
+  --color-bg-soft:      #12151c;
+  --color-bg-code:      #0d1117;
+  --color-border:       #262b36;
+  --color-border-soft:  #1c2029;
+
+  --color-ink:          #f1f5f9;
+  --color-ink-soft:     #cbd5e1;
+  --color-muted:        #94a3b8;
+  --color-dim:          #64748b;
+
+  --color-accent:       #a78bfa;
+  --color-accent-soft:  #2a2145;
+  --color-accent-deep:  #c4b5fd;
+
+  --color-success:      #34d399;
+  --color-warning:      #fbbf24;
+  --color-danger:       #f87171;
+
+  --color-code-bg:      #16233a;
+  --color-code-ink:     #7cb8f0;
 }
 
 * { box-sizing: border-box; }
@@ -134,8 +168,8 @@ button { font: inherit; cursor: pointer; }
   font-size: 0.88em;
   padding: 2px 6px;
   border-radius: 4px;
-  background: #eaf2fb;
-  color: #2563a8;
+  background: var(--color-code-bg);
+  color: var(--color-code-ink);
   font-weight: 500;
 }
 /* Code that's ALSO a real link (Xref, and anything wrapping <code> in <a>)
