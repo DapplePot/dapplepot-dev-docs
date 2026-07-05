@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import CodeBlock from '../components/CodeBlock.jsx';
 import Note      from '../components/Note.jsx';
+import Xref      from '../components/Xref.jsx';
 
 const LangChainPage = () => (
   <>
@@ -13,7 +15,7 @@ const LangChainPage = () => (
 
     <h2 id="initialize">Initialize</h2>
     <p>
-      Create the <code>DapplePot</code> instance once. There is no{' '}
+      Create the <Xref>DapplePot</Xref> instance once. There is no{' '}
       <code>instrument_*</code> call — instead you ask for a fresh callback
       handler per chain invocation.
     </p>
@@ -26,14 +28,14 @@ dp = DapplePot(
 )`}</CodeBlock>
 
     <Note tone="info" title="Full signature">
-      See the <a href="/sdk/reference/api">API Reference</a> for every
+      See the <Link to="/sdk/reference/api">API Reference</Link> for every
       constructor option, including sampling, PII scrubbing, and buffer
       tuning.
     </Note>
 
     <h2 id="usage">Usage</h2>
     <p>
-      Get a handler with <code>dp.callback_handler()</code> and pass it in
+      Get a handler with <Xref>dp.callback_handler()</Xref> and pass it in
       the run config. One handler == one session.
     </p>
 
@@ -159,21 +161,21 @@ except Exception:
 
     <h3 id="blocked">Handling blocked calls</h3>
     <p>
-      Security checks raise <code>DapplePotBlockedError</code> /{' '}
-      <code>DapplePotSessionTerminatedError</code> from inside the chain.
+      Security checks raise <Xref>DapplePotBlockedError</Xref> /{' '}
+      <Xref>DapplePotSessionTerminatedError</Xref> from inside the chain.
       The two have different catch sites:
     </p>
 
     <ul>
       <li>
-        <code>DapplePotBlockedError</code> — catch <strong>inside each
+        <Xref>DapplePotBlockedError</Xref> — catch <strong>inside each
         pipeline step</strong> so the step can return a graceful fallback
         and the chain continues to completion. DapplePot intercepts at
         both <code>on_chat_model_start</code> and <code>on_tool_start</code>,
         so either an LLM call or a tool call can raise it.
       </li>
       <li>
-        <code>DapplePotSessionTerminatedError</code> — catch at the{' '}
+        <Xref>DapplePotSessionTerminatedError</Xref> — catch at the{' '}
         <strong>root</strong>, around <code>chain.invoke()</code>. The
         interceptor already emitted <code>session_error</code> before
         raising; you only need to exit gracefully.
@@ -199,7 +201,7 @@ except DapplePotSessionTerminatedError:
     # The session is permanently closed; no further invocations allowed`}</CodeBlock>
 
     <p>
-      The <code>DapplePotBlockedError</code> carries{' '}
+      The <Xref>DapplePotBlockedError</Xref> carries{' '}
       <code>.signal</code>, <code>.reason</code>, and{' '}
       <code>.session_id</code> — log <code>.signal</code> (e.g.{' '}
       <code>PI-01a</code>) in your fallback so the trace is searchable

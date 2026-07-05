@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import CodeBlock from '../components/CodeBlock.jsx';
 import Note      from '../components/Note.jsx';
+import Xref      from '../components/Xref.jsx';
 
 const AnthropicPage = () => (
   <>
@@ -13,8 +15,8 @@ const AnthropicPage = () => (
 
     <h2 id="initialize">Initialize</h2>
     <p>
-      Create one <code>DapplePot</code> instance per process at startup, then
-      call <code>dp.instrument_anthropic()</code>. The patch survives until
+      Create one <Xref>DapplePot</Xref> instance per process at startup, then
+      call <Xref>dp.instrument_anthropic()</Xref>. The patch survives until
       process exit.
     </p>
 
@@ -30,7 +32,7 @@ dp.instrument_anthropic()
 client = anthropic.Anthropic(api_key="...")`}</CodeBlock>
 
     <Note tone="info" title="Full signature">
-      See the <a href="/sdk/reference/api">API Reference</a> for every
+      See the <Link to="/sdk/reference/api">API Reference</Link> for every
       constructor option, including sampling, PII scrubbing, and buffer
       tuning.
     </Note>
@@ -42,7 +44,7 @@ client = anthropic.Anthropic(api_key="...")`}</CodeBlock>
 
     <h2 id="single-turn">Single-turn usage</h2>
     <p>
-      Wrap each conversation in <code>dp.session()</code>. The SDK generates
+      Wrap each conversation in <Xref>dp.session()</Xref>. The SDK generates
       a session ID automatically; you only pass identity fields if you have
       them.
     </p>
@@ -59,7 +61,7 @@ client = anthropic.Anthropic(api_key="...")`}</CodeBlock>
     <h2 id="multi-turn">Multi-turn usage</h2>
     <p>
       Keep your message history client-side. Every call inside the same{' '}
-      <code>dp.session()</code> block belongs to one session.
+      <Xref>dp.session()</Xref> block belongs to one session.
     </p>
 
     <CodeBlock language="python">{`history = []
@@ -75,7 +77,7 @@ with dp.session(user_context_id="user_123"):
 
     <h2 id="async-streaming">Sync, async, and streaming</h2>
     <p>
-      <code>dp.instrument_anthropic()</code> patches every variant in one
+      <Xref>dp.instrument_anthropic()</Xref> patches every variant in one
       call — sync and async <code>messages.create()</code>, plus both
       streaming surfaces (<code>stream=True</code> and the{' '}
       <code>messages.stream()</code> context manager) in their sync and
@@ -163,7 +165,7 @@ asyncio.run(chat())`}</CodeBlock>
 
     <h2 id="nodes">Nodes</h2>
     <p>
-      Use <code>dp.node()</code> inside a session to wrap any named step into
+      Use <Xref>dp.node()</Xref> inside a session to wrap any named step into
       a traced unit. It emits <code>node_start</code> on entry and{' '}
       <code>node_end</code> on clean exit. Pass <code>input</code> to capture
       what the step received.
@@ -182,9 +184,9 @@ asyncio.run(chat())`}</CodeBlock>
 
     <h3 id="node-error">Catching node errors</h3>
     <p>
-      If an exception escapes a <code>dp.node()</code> block, DapplePot emits{' '}
+      If an exception escapes a <Xref>dp.node()</Xref> block, DapplePot emits{' '}
       <code>node_error</code> and re-raises. Catch outside the{' '}
-      <code>with dp.node()</code> block but inside <code>dp.session()</code>{' '}
+      <code>with dp.node()</code> block but inside <Xref>dp.session()</Xref>{' '}
       to keep the session alive.
     </p>
 
@@ -256,10 +258,10 @@ asyncio.run(chat())`}</CodeBlock>
     <ul>
       <li><code>llm_error</code> — <code>messages.create()</code> raised</li>
       <li><code>tool_error</code> — tool result flagged with <code>is_error: True</code></li>
-      <li><code>node_error</code> — exception escaped a <code>dp.node()</code> block</li>
-      <li><code>session_error</code> — exception escaped <code>dp.session()</code> uncaught</li>
+      <li><code>node_error</code> — exception escaped a <Xref>dp.node()</Xref> block</li>
+      <li><code>session_error</code> — exception escaped <Xref>dp.session()</Xref> uncaught</li>
       <li>
-        <code>DapplePotBlockedError</code> / <code>DapplePotSessionTerminatedError</code> —
+        <Xref>DapplePotBlockedError</Xref> / <Xref>DapplePotSessionTerminatedError</Xref> —
         raised when a security check fires with action{' '}
         <code>block_call</code> or <code>terminate_session</code>
       </li>
@@ -268,7 +270,7 @@ asyncio.run(chat())`}</CodeBlock>
     <h3 id="recovery">Recovery — keep the session alive</h3>
     <p>
       Errors propagate only as far as the exception travels. Catch{' '}
-      <code>RuntimeError</code> inside <code>dp.session()</code> and the
+      <code>RuntimeError</code> inside <Xref>dp.session()</Xref> and the
       session continues normally.
     </p>
 
@@ -284,10 +286,10 @@ asyncio.run(chat())`}</CodeBlock>
     <h3 id="blocked">Handling blocked calls</h3>
     <p>
       Security checks configured with the <code>block_call</code> action
-      raise <code>DapplePotBlockedError</code> from the LLM/tool call site —
+      raise <Xref>DapplePotBlockedError</Xref> from the LLM/tool call site —
       catch it close to the call so a fallback can return and the session
       continues. <code>terminate_session</code> raises{' '}
-      <code>DapplePotSessionTerminatedError</code>; catch it at the outer
+      <Xref>DapplePotSessionTerminatedError</Xref>; catch it at the outer
       level to exit the conversation gracefully.
     </p>
 
@@ -315,7 +317,7 @@ except DapplePotSessionTerminatedError:
     print("Session terminated by security policy")`}</CodeBlock>
 
     <p>
-      The <code>DapplePotBlockedError</code> carries three useful
+      The <Xref>DapplePotBlockedError</Xref> carries three useful
       attributes: <code>.signal</code> (sub-check id like{' '}
       <code>PI-01a</code>), <code>.reason</code> (human-readable
       explanation), and <code>.session_id</code> (for cross-referencing

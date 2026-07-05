@@ -30,7 +30,7 @@ const setJsonLd = (id, data) => {
 };
 
 const DocShell = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const page = findPage(pathname);
@@ -63,6 +63,22 @@ const DocShell = () => {
       },
     });
   }, [pathname, page.seo]);
+
+  // Scroll to the #hash target after the new page's content has actually
+  // rendered — on route change the target element doesn't exist yet during
+  // the same tick, so a plain browser jump (or an effect without the
+  // rAF/timeout) fires too early and silently does nothing.
+  useEffect(() => {
+    const id = hash.slice(1);
+    if (!id) {
+      window.scrollTo(0, 0);
+      return;
+    }
+    requestAnimationFrame(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, [pathname, hash]);
 
   return (
     <>

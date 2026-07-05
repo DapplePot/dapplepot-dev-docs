@@ -1,21 +1,22 @@
-import IntroPage         from '../pages/IntroPage.jsx';
-import AnthropicPage     from '../pages/AnthropicPage.jsx';
-import OpenAIPage        from '../pages/OpenAIPage.jsx';
-import LangChainPage     from '../pages/LangChainPage.jsx';
-import LangGraphPage     from '../pages/LangGraphPage.jsx';
-import FaqsPage          from '../pages/FaqsPage.jsx';
-import ApiReferencePage  from '../pages/ApiReferencePage.jsx';
+import IntroPage               from '../pages/IntroPage.jsx';
+import AnthropicPage           from '../pages/AnthropicPage.jsx';
+import OpenAIPage              from '../pages/OpenAIPage.jsx';
+import LangChainPage           from '../pages/LangChainPage.jsx';
+import LangGraphPage           from '../pages/LangGraphPage.jsx';
+import FaqsPage                from '../pages/FaqsPage.jsx';
+import ApiReferencePage        from '../pages/ApiReferencePage.jsx';
+import ProductionChecklistPage from '../pages/ProductionChecklistPage.jsx';
 
 export const SECTIONS = [
   {
     title: null,
     pages: [
       {
-        label: 'Introduction',
+        label: 'Getting Started',
         path: '/sdk',
         component: IntroPage,
         seo: {
-          title: "DapplePot Python SDK · Developer's Guide",
+          title: "Getting Started · DapplePot Python SDK",
           description: 'Runtime security, session replay, and real-time threat detection for AI agents — in a few lines of code. Drop-in integrations for Anthropic, OpenAI, LangChain, and LangGraph.',
         },
       },
@@ -58,6 +59,20 @@ export const SECTIONS = [
         seo: {
           title: 'LangGraph Integration · DapplePot Python SDK',
           description: 'Monitor LangGraph agents with DapplePot. Each graph node becomes a named trace pair, giving full visibility and security across every step.',
+        },
+      },
+    ],
+  },
+  {
+    title: 'Guides',
+    pages: [
+      {
+        label: 'Production Checklist',
+        path: '/sdk/guides/production-checklist',
+        component: ProductionChecklistPage,
+        seo: {
+          title: 'Production Checklist · DapplePot Python SDK',
+          description: 'Credential handling, graceful shutdown, PII scrubbing, and overhead tuning before you ship a DapplePot integration to production.',
         },
       },
     ],

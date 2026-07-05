@@ -134,9 +134,24 @@ button { font: inherit; cursor: pointer; }
   font-size: 0.88em;
   padding: 2px 6px;
   border-radius: 4px;
+  background: #eaf2fb;
+  color: #2563a8;
+  font-weight: 500;
+}
+/* Code that's ALSO a real link (Xref, and anything wrapping <code> in <a>)
+   gets the violet accent + a real underline — plain code stays a distinct
+   blue, so at a glance, violet = clickable, blue = not. */
+.prose a code {
   background: var(--color-accent-soft);
   color: var(--color-accent-deep);
-  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 3px;
+}
+.prose a:hover code {
+  background: var(--color-accent);
+  color: #fff;
+  text-decoration-color: #fff;
 }
 .prose pre code,
 .prose .codeblock code {

@@ -18,8 +18,10 @@ from __future__ import annotations
 import datetime
 import inspect
 import json
+import re
 import sys
 from importlib.metadata import PackageNotFoundError
+from importlib.metadata import metadata as _pkg_metadata
 from importlib.metadata import version as _pkg_version
 
 from docstring_parser.google import parse as _parse_docstring
@@ -33,6 +35,39 @@ PUBLIC_API = {
     "dapplepot_sdk": (dapplepot_sdk, ["DapplePot", "DapplePotBlockedError", "DapplePotSessionTerminatedError"]),
     "dapplepot_sdk.scrubbers": (scrubbers, ["BaseScrubber", "RegexScrubber"]),
 }
+
+# Which install extras to surface as "compatibility" info on the docs site.
+# "all" and "docgen" are deliberately excluded — "all" just repeats the
+# others, and "docgen" is build tooling, not a user-facing integration.
+_DISPLAY_EXTRAS = ("anthropic", "openai", "langchain")
+
+_REQUIRES_DIST_RE = re.compile(
+    r'^([A-Za-z0-9_.-]+)\s*([^;]*?)\s*(?:;\s*extra\s*==\s*"([^"]+)")?$'
+)
+
+
+def _build_requirements() -> dict:
+    """Pull Python/framework version requirements straight from the installed
+    package's metadata (Requires-Python, Requires-Dist per extra) — sourced
+    from the real wheel, not hand-typed, so it can't drift from what
+    dapplepot-sdk's pyproject.toml actually declares.
+    """
+    try:
+        meta = _pkg_metadata("dapplepot-sdk")
+    except PackageNotFoundError:
+        return {"python": None, "extras": {}}
+
+    extras: dict[str, list[str]] = {}
+    for req in meta.get_all("Requires-Dist") or []:
+        m = _REQUIRES_DIST_RE.match(req)
+        if not m:
+            continue
+        name, specifier, extra = m.groups()
+        if extra not in _DISPLAY_EXTRAS:
+            continue
+        extras.setdefault(extra, []).append(f"{name}{specifier}".strip())
+
+    return {"python": meta.get("Requires-Python"), "extras": extras}
 
 
 def _docstring_sections(doc: str | None) -> dict:
@@ -116,6 +151,7 @@ def build_reference() -> dict:
         "sdk_version": sdk_version,
         "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "modules": modules,
+        "requirements": _build_requirements(),
     }
 
 

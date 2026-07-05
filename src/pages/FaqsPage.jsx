@@ -1,4 +1,5 @@
 import CodeBlock from '../components/CodeBlock.jsx';
+import Xref      from '../components/Xref.jsx';
 
 const FaqItem = ({ id, q, children }) => (
   <details id={id} className="group my-3 rounded-lg border border-border bg-bg-soft px-4 py-3 [&[open]]:bg-bg [&[open]]:shadow-sm">
@@ -51,7 +52,7 @@ const FaqsPage = () => (
     <FaqItem id="auto-session-id" q="Do I need to pass session_id to dp.session()?">
       <p>
         No. The SDK generates a fresh session ID for every{' '}
-        <code>dp.session()</code> block. The only parameters you optionally
+        <Xref>dp.session()</Xref> block. The only parameters you optionally
         pass are <code>user_context_id</code> and <code>user_tenant_id</code>.
       </p>
     </FaqItem>
@@ -71,7 +72,7 @@ const FaqsPage = () => (
       <p>
         Each patched LLM call becomes its own one-event session — useful for
         quick demos but not what you want in production. Wrap conversations
-        in <code>dp.session()</code> so a single conversation = a single
+        in <Xref>dp.session()</Xref> so a single conversation = a single
         session.
       </p>
     </FaqItem>
@@ -106,8 +107,8 @@ const FaqsPage = () => (
 
     <FaqItem id="async-supported" q="Does the SDK support async OpenAI and Anthropic clients?">
       <p>
-        Yes. <code>dp.instrument_openai()</code> and{' '}
-        <code>dp.instrument_anthropic()</code> patch both sync and async
+        Yes. <Xref>dp.instrument_openai()</Xref> and{' '}
+        <Xref>dp.instrument_anthropic()</Xref> patch both sync and async
         client variants in one call. Use{' '}
         <code>openai.AsyncOpenAI(...)</code> or{' '}
         <code>anthropic.AsyncAnthropic(...)</code> as you normally would.
@@ -180,14 +181,14 @@ await app.ainvoke(state, config={"callbacks": [handler]})`}</CodeBlock>
       <p>Two exception types, two catch sites:</p>
       <ul>
         <li>
-          <code>DapplePotBlockedError</code> — single call blocked. Has{' '}
+          <Xref>DapplePotBlockedError</Xref> — single call blocked. Has{' '}
           <code>.signal</code>, <code>.reason</code>,{' '}
           <code>.session_id</code>. Catch <strong>close to the call
           site</strong> (each step / each node) so the rest of the
           conversation continues with a fallback.
         </li>
         <li>
-          <code>DapplePotSessionTerminatedError</code> — whole session
+          <Xref>DapplePotSessionTerminatedError</Xref> — whole session
           terminated by policy. Catch <strong>at the root</strong> and
           exit the conversation. The interceptor already emitted{' '}
           <code>session_error</code> before raising.
@@ -202,17 +203,17 @@ await app.ainvoke(state, config={"callbacks": [handler]})`}</CodeBlock>
         No. <code>llm_error</code> fires the moment the LLM call raises. If
         you catch the exception inside the session, the session continues
         and ends with <code>session_end</code>. <code>session_error</code>{' '}
-        only fires when the exception escapes <code>dp.session()</code>{' '}
+        only fires when the exception escapes <Xref>dp.session()</Xref>{' '}
         entirely.
       </p>
     </FaqItem>
 
     <FaqItem id="blocked-vs-terminated" q="What's the difference between blocked and terminated?">
       <p>
-        <code>block_call</code> raises <code>DapplePotBlockedError</code> on
+        <code>block_call</code> raises <Xref>DapplePotBlockedError</Xref> on
         a single call — the session is still alive and you can recover.{' '}
         <code>terminate_session</code> raises{' '}
-        <code>DapplePotSessionTerminatedError</code> and the session ends
+        <Xref>DapplePotSessionTerminatedError</Xref> and the session ends
         with <code>session_error</code>. Both are configured per-check in
         the dashboard.
       </p>

@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import logo from '../assets/dapplePotLogo.png';
 import { FaGithub, FaLinkedin, FaXTwitter } from 'react-icons/fa6';
+import SearchPalette from './SearchPalette.jsx';
 
 const TopBar = ({ onMenuClick }) => (
   <header className="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-md">
@@ -14,16 +16,17 @@ const TopBar = ({ onMenuClick }) => (
             <path d="M2 4h10M2 7h10M2 10h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
         </button>
-        <a href="/sdk" className="flex items-center gap-1.5">
+        <Link to="/sdk" className="flex items-center gap-1.5">
           <img src={logo} alt="DapplePot" width="22" height="22" className="rounded-[5px] invert" />
           <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink">DapplePot</span>
           <span className="ml-1 hidden rounded border border-border bg-bg-soft px-1.5 py-[1px] font-mono text-[10px] font-medium text-muted md:inline">
             docs
           </span>
-        </a>
+        </Link>
       </div>
 
-      <nav className="flex items-center gap-1">
+      <nav className="flex items-center gap-3">
+        <SearchPalette />
         <a
           href="https://github.com/DapplePot/dapplepot-sdk"
           target="_blank"

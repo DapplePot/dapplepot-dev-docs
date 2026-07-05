@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import CodeBlock from '../components/CodeBlock.jsx';
 import Note      from '../components/Note.jsx';
+import Xref      from '../components/Xref.jsx';
 
 const OpenAIPage = () => (
   <>
@@ -13,8 +15,8 @@ const OpenAIPage = () => (
 
     <h2 id="initialize">Initialize</h2>
     <p>
-      Create one <code>DapplePot</code> instance at startup and call{' '}
-      <code>dp.instrument_openai()</code>.
+      Create one <Xref>DapplePot</Xref> instance at startup and call{' '}
+      <Xref>dp.instrument_openai()</Xref>.
     </p>
 
     <CodeBlock language="python">{`import openai
@@ -29,7 +31,7 @@ dp.instrument_openai()
 client = openai.OpenAI(api_key="...")`}</CodeBlock>
 
     <Note tone="info" title="Full signature">
-      See the <a href="/sdk/reference/api">API Reference</a> for every
+      See the <Link to="/sdk/reference/api">API Reference</Link> for every
       constructor option, including sampling, PII scrubbing, and buffer
       tuning.
     </Note>
@@ -51,7 +53,7 @@ with dp.session(user_context_id="user_123"):
 
     <h2 id="async-streaming">Sync, async, and streaming</h2>
     <p>
-      <code>dp.instrument_openai()</code> patches all four variants in one
+      <Xref>dp.instrument_openai()</Xref> patches all four variants in one
       call — sync, async, sync streaming, and async streaming. No extra
       setup, no per-call wrapping. Tool calls inside any variant are
       auto-traced.
@@ -125,7 +127,7 @@ asyncio.run(chat())`}</CodeBlock>
 
     <h2 id="nodes">Nodes</h2>
     <p>
-      Use <code>dp.node()</code> inside a session to wrap any named step into
+      Use <Xref>dp.node()</Xref> inside a session to wrap any named step into
       a traced unit. It emits <code>node_start</code> on entry and{' '}
       <code>node_end</code> on clean exit. Pass <code>input</code> to capture
       what the step received.
@@ -143,9 +145,9 @@ asyncio.run(chat())`}</CodeBlock>
 
     <h3 id="node-error">Catching node errors</h3>
     <p>
-      If an exception escapes a <code>dp.node()</code> block, DapplePot emits{' '}
+      If an exception escapes a <Xref>dp.node()</Xref> block, DapplePot emits{' '}
       <code>node_error</code> and re-raises. Catch outside the{' '}
-      <code>with dp.node()</code> block but inside <code>dp.session()</code>{' '}
+      <code>with dp.node()</code> block but inside <Xref>dp.session()</Xref>{' '}
       to keep the session alive.
     </p>
 
@@ -226,8 +228,8 @@ asyncio.run(chat())`}</CodeBlock>
     <ul>
       <li><code>llm_error</code> — <code>chat.completions.create()</code> raised</li>
       <li><code>tool_error</code> — tool message flagged with <code>is_error: True</code></li>
-      <li><code>node_error</code> — exception escaped a <code>dp.node()</code> block</li>
-      <li><code>session_error</code> — exception escaped <code>dp.session()</code> uncaught</li>
+      <li><code>node_error</code> — exception escaped a <Xref>dp.node()</Xref> block</li>
+      <li><code>session_error</code> — exception escaped <Xref>dp.session()</Xref> uncaught</li>
     </ul>
 
     <h3 id="recovery">Recovery example</h3>
@@ -243,10 +245,10 @@ asyncio.run(chat())`}</CodeBlock>
     <h3 id="blocked">Handling blocked calls</h3>
     <p>
       Security checks configured with the <code>block_call</code> action
-      raise <code>DapplePotBlockedError</code> from the LLM/tool call site —
+      raise <Xref>DapplePotBlockedError</Xref> from the LLM/tool call site —
       catch it close to the call so a fallback can return and the session
       continues. <code>terminate_session</code> raises{' '}
-      <code>DapplePotSessionTerminatedError</code>; catch it at the outer
+      <Xref>DapplePotSessionTerminatedError</Xref>; catch it at the outer
       level to exit the conversation gracefully.
     </p>
 
@@ -273,7 +275,7 @@ except DapplePotSessionTerminatedError:
     print("Session terminated by security policy")`}</CodeBlock>
 
     <p>
-      The <code>DapplePotBlockedError</code> carries three useful
+      The <Xref>DapplePotBlockedError</Xref> carries three useful
       attributes: <code>.signal</code> (sub-check id like{' '}
       <code>PI-01a</code>), <code>.reason</code> (human-readable
       explanation), and <code>.session_id</code> (for cross-referencing

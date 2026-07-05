@@ -39,11 +39,30 @@ const KIND_BADGES = {
 
 const isExceptionName = (name) => name.endsWith('Error');
 
-const MethodCard = ({ method }) => {
+// Which integration guide each method belongs to, if any — shown as a link
+// on the method card so the reference and the tutorial content stay
+// discoverable from each other.
+const METHOD_GUIDES = {
+  instrument_anthropic: { label: 'Anthropic guide', path: '/sdk/agent-frameworks/anthropic' },
+  instrument_openai: { label: 'OpenAI guide', path: '/sdk/agent-frameworks/openai' },
+  callback_handler: { label: 'LangChain / LangGraph guide', path: '/sdk/agent-frameworks/langchain' },
+};
+
+const MethodCard = ({ method, anchorId }) => {
   const { docstring: doc } = method;
+  const guide = METHOD_GUIDES[method.name];
   return (
-    <div className="my-5 rounded-lg border border-border p-4">
+    <div id={anchorId} className="my-5 scroll-mt-6 rounded-lg border border-border p-4">
       <CodeBlock language="python">{`${method.signature}`}</CodeBlock>
+
+      {guide && (
+        <a
+          href={guide.path}
+          className="mb-2 inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 font-mono text-[10.5px] font-semibold text-accent-deep no-underline"
+        >
+          → {guide.label}
+        </a>
+      )}
 
       {doc.summary && <p className="font-medium text-ink">{renderDocText(doc.summary)}</p>}
       {doc.description && (
@@ -115,7 +134,7 @@ const ClassSection = ({ moduleName, cls }) => {
         <p className="whitespace-pre-line">{renderDocText(cls.docstring.description)}</p>
       )}
       {cls.methods.map((m) => (
-        <MethodCard key={m.name} method={m} />
+        <MethodCard key={m.name} method={m} anchorId={`${slug(moduleName, cls.name)}-${m.name}`} />
       ))}
     </div>
   );
@@ -126,16 +145,12 @@ const ApiReferencePage = () => (
     <span className="eyebrow">Reference</span>
     <h1>API Reference</h1>
     <p className="lede">
-      Generated directly from the SDK's own docstrings — every signature and
-      description below is exactly what ships in{' '}
-      <code>dapplepot-sdk v{apiReference.sdk_version}</code>. If a code
-      example elsewhere in these docs ever disagrees with this page, this
-      page is right.
+      Every signature and description below is generated directly from the{' '}
+      <code>dapplepot-sdk v{apiReference.sdk_version}</code> source.
     </p>
 
     <Note tone="info" title={`Synced with dapplepot-sdk v${apiReference.sdk_version}`}>
-      Generated {new Date(apiReference.generated_at).toLocaleString()}. See{' '}
-      <code>sdk-version.json</code> in this repo to bump the pinned version.
+      Last generated {new Date(apiReference.generated_at).toLocaleDateString()}.
     </Note>
 
     {apiReference.modules.map((mod) => (

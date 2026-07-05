@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import CodeBlock from '../components/CodeBlock.jsx';
 import Note      from '../components/Note.jsx';
+import Xref      from '../components/Xref.jsx';
 
 const LangGraphPage = () => (
   <>
@@ -13,7 +15,7 @@ const LangGraphPage = () => (
 
     <h2 id="initialize">Initialize</h2>
     <p>
-      Same as LangChain — one <code>DapplePot</code> instance, then{' '}
+      Same as LangChain — one <Xref>DapplePot</Xref> instance, then{' '}
       <code>callback_handler()</code> per graph run.
     </p>
 
@@ -25,7 +27,7 @@ dp = DapplePot(
 )`}</CodeBlock>
 
     <Note tone="info" title="Full signature">
-      See the <a href="/sdk/reference/api">API Reference</a> for every
+      See the <Link to="/sdk/reference/api">API Reference</Link> for every
       constructor option, including sampling, PII scrubbing, and buffer
       tuning.
     </Note>
@@ -162,11 +164,11 @@ app = graph.compile()`}</CodeBlock>
 
     <h3 id="blocked">Handling blocked calls</h3>
     <p>
-      Catch <code>DapplePotBlockedError</code> <strong>inside each
+      Catch <Xref>DapplePotBlockedError</Xref> <strong>inside each
       node</strong> — graph nodes are independent, so catching the block
       at the root would terminate the run unnecessarily. The interceptor
       raises from inside whichever node was making the LLM or tool call.
-      <code>DapplePotSessionTerminatedError</code> goes at the root.
+      <Xref>DapplePotSessionTerminatedError</Xref> goes at the root.
     </p>
 
     <CodeBlock language="python">{`from dapplepot_sdk import DapplePotBlockedError, DapplePotSessionTerminatedError
@@ -188,7 +190,7 @@ except DapplePotSessionTerminatedError:
 
     <p>
       Both exceptions carry <code>.session_id</code> for cross-referencing
-      against the dashboard. <code>DapplePotBlockedError</code> also has{' '}
+      against the dashboard. <Xref>DapplePotBlockedError</Xref> also has{' '}
       <code>.signal</code> (the sub-check id, e.g. <code>PI-01a</code>) and{' '}
       <code>.reason</code> for logging.
     </p>
