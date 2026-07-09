@@ -84,7 +84,11 @@ const DocShell = () => {
     <>
       <TopBar onMenuClick={() => setSidebarOpen(true)} />
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-[16rem_minmax(0,1fr)] max-md:grid-cols-1">
+      {/* TopBar is `fixed`, out of document flow — pt-14 (56px, matching its
+          h-14) reserves the space it used to occupy under `sticky`, so this
+          content (and the sidebar's own in-flow start position) doesn't
+          render underneath it. */}
+      <div className="mx-auto grid max-w-[1440px] grid-cols-[16rem_minmax(0,1fr)] pt-14 max-md:grid-cols-1">
         <Sidebar
           currentPath={pathname}
           open={sidebarOpen}

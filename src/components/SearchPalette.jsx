@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { FLAT_PAGES } from '../data/pages.js';
 
@@ -73,20 +74,27 @@ const SearchPalette = () => {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-md border border-border bg-bg-soft px-2.5 py-1.5 text-[13px] text-muted hover:text-ink"
+        className="flex w-40 items-center gap-2 rounded-md border border-border bg-bg-soft px-2.5 py-1.5 text-[13px] text-muted hover:text-ink sm:w-64"
         aria-label="Search docs"
       >
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="shrink-0">
           <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
           <path d="M11 11L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
         <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden rounded border border-border bg-bg px-1.5 font-mono text-[10.5px] sm:inline">⌘K</kbd>
+        <kbd className="ml-auto hidden rounded border border-border bg-bg px-1.5 font-mono text-[10.5px] sm:inline">⌘K</kbd>
       </button>
 
-      {open && (
+      {open && createPortal(
+        // Portaled straight to <body> — TopBar has `backdrop-blur-md`
+        // (backdrop-filter), which establishes a new containing block for
+        // any `position: fixed` descendant (same rule as `transform`/
+        // `filter`). Rendered inside TopBar's subtree, this overlay's
+        // `fixed inset-0` would size against TopBar's own 56px header box
+        // instead of the viewport. Portaling out of that subtree avoids it
+        // regardless of what CSS TopBar (or any other ancestor) ever gets.
         <div
-          className="fixed inset-0 z-[100] flex items-start justify-center bg-ink/40 pt-[15vh]"
+          className="fixed inset-0 z-[100] flex items-start justify-center bg-ink/10 pt-[15vh]"
           onClick={() => setOpen(false)}
         >
           <div
@@ -120,7 +128,8 @@ const SearchPalette = () => {
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

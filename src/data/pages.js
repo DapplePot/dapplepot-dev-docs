@@ -6,7 +6,6 @@ import LangGraphPage           from '../pages/LangGraphPage.jsx';
 import FaqsPage                from '../pages/FaqsPage.jsx';
 import ApiReferencePage        from '../pages/ApiReferencePage.jsx';
 import ProductionChecklistPage from '../pages/ProductionChecklistPage.jsx';
-import PricingPage             from '../pages/PricingPage.jsx';
 
 export const SECTIONS = [
   {
@@ -17,7 +16,7 @@ export const SECTIONS = [
         path: '/sdk',
         component: IntroPage,
         seo: {
-          title: "Getting Started · DapplePot Python SDK",
+          title: "Getting Started | DapplePot Python SDK",
           description: 'Runtime security, session replay, and real-time threat detection for AI agents — in a few lines of code. Drop-in integrations for Anthropic, OpenAI, LangChain, and LangGraph.',
         },
       },
@@ -31,7 +30,7 @@ export const SECTIONS = [
         path: '/sdk/agent-frameworks/anthropic',
         component: AnthropicPage,
         seo: {
-          title: 'Anthropic Integration · DapplePot Python SDK',
+          title: 'Anthropic Integration | DapplePot Python SDK',
           description: 'Instrument your Anthropic Claude agent with DapplePot. Auto-patches messages.create() to capture every LLM and tool event with real-time security checks.',
         },
       },
@@ -40,7 +39,7 @@ export const SECTIONS = [
         path: '/sdk/agent-frameworks/openai',
         component: OpenAIPage,
         seo: {
-          title: 'OpenAI Integration · DapplePot Python SDK',
+          title: 'OpenAI Integration | DapplePot Python SDK',
           description: 'Instrument your OpenAI agent with DapplePot. Auto-patches chat.completions.create() for full LLM and tool event capture with real-time threat detection.',
         },
       },
@@ -49,7 +48,7 @@ export const SECTIONS = [
         path: '/sdk/agent-frameworks/langchain',
         component: LangChainPage,
         seo: {
-          title: 'LangChain Integration · DapplePot Python SDK',
+          title: 'LangChain Integration | DapplePot Python SDK',
           description: 'Add DapplePot security monitoring to LangChain agents using the built-in callback handler. Capture every chain event with zero boilerplate.',
         },
       },
@@ -58,7 +57,7 @@ export const SECTIONS = [
         path: '/sdk/agent-frameworks/langgraph',
         component: LangGraphPage,
         seo: {
-          title: 'LangGraph Integration · DapplePot Python SDK',
+          title: 'LangGraph Integration | DapplePot Python SDK',
           description: 'Monitor LangGraph agents with DapplePot. Each graph node becomes a named trace pair, giving full visibility and security across every step.',
         },
       },
@@ -72,7 +71,7 @@ export const SECTIONS = [
         path: '/sdk/guides/production-checklist',
         component: ProductionChecklistPage,
         seo: {
-          title: 'Production Checklist · DapplePot Python SDK',
+          title: 'Production Checklist | DapplePot Python SDK',
           description: 'Credential handling, graceful shutdown, PII scrubbing, and overhead tuning before you ship a DapplePot integration to production.',
         },
       },
@@ -86,7 +85,7 @@ export const SECTIONS = [
         path: '/sdk/reference/api',
         component: ApiReferencePage,
         seo: {
-          title: 'API Reference · DapplePot Python SDK',
+          title: 'API Reference | DapplePot Python SDK',
           description: 'Auto-generated API reference for the DapplePot Python SDK, sourced directly from the package docstrings — always in sync with the installed version.',
         },
       },
@@ -100,17 +99,8 @@ export const SECTIONS = [
         path: '/sdk/help/faq',
         component: FaqsPage,
         seo: {
-          title: 'FAQs · DapplePot Python SDK',
+          title: 'FAQs | DapplePot Python SDK',
           description: 'Answers to common questions about installing, configuring, and using the DapplePot Python SDK for AI agent security monitoring.',
-        },
-      },
-      {
-        label: 'Pricing',
-        path: '/sdk/help/pricing',
-        component: PricingPage,
-        seo: {
-          title: 'Pricing · DapplePot Python SDK',
-          description: 'DapplePot pricing information.',
         },
       },
     ],

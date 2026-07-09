@@ -9,7 +9,7 @@ const PrevNext = ({ pathname }) => {
       {prev ? (
         <Link
           to={prev.path}
-          className="group rounded-lg border border-border bg-bg p-4 transition-colors hover:border-accent/40 hover:bg-accent-soft/30"
+          className="group no-underline rounded-lg border border-border bg-bg p-4 transition-colors hover:border-accent/40 hover:bg-accent-soft/30"
         >
           <div className="mb-1 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
             ← Previous
@@ -24,7 +24,7 @@ const PrevNext = ({ pathname }) => {
       {next ? (
         <Link
           to={next.path}
-          className="group rounded-lg border border-border bg-bg p-4 text-right transition-colors hover:border-accent/40 hover:bg-accent-soft/30"
+          className="group no-underline rounded-lg border border-border bg-bg p-4 text-right transition-colors hover:border-accent/40 hover:bg-accent-soft/30"
         >
           <div className="mb-1 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
             Next →

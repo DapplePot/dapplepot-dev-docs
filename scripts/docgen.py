@@ -71,19 +71,33 @@ def _build_requirements() -> dict:
 
 
 def _docstring_sections(doc: str | None) -> dict:
-    """Parse a Google-style docstring into the JSON schema's docstring shape."""
+    """Parse a Google-style docstring into the JSON schema's docstring shape.
+
+    A docstring's ``Args:``/``Parameters:`` section and its ``Attributes:``
+    section both parse into ``docstring_parser``'s unified ``.params`` list —
+    the only way to tell them apart is ``param.args[0]`` (``'param'`` vs
+    ``'attribute'``). We split them back out here: ``args`` is rendered on
+    method cards (input parameters), ``attributes`` is rendered on the class
+    header (instance attributes — e.g. what's on a caught exception).
+    """
     if not doc:
         return {
             "summary": None, "description": None,
-            "args": [], "returns": None, "raises": [], "examples": [],
+            "args": [], "attributes": [], "returns": None, "raises": [], "examples": [],
         }
     parsed = _parse_docstring(doc)
+    args = [p for p in parsed.params if (p.args[0] if p.args else "param") != "attribute"]
+    attributes = [p for p in parsed.params if p.args and p.args[0] == "attribute"]
     return {
         "summary": parsed.short_description,
         "description": parsed.long_description,
         "args": [
             {"name": p.arg_name, "type": p.type_name, "description": p.description}
-            for p in parsed.params
+            for p in args
+        ],
+        "attributes": [
+            {"name": p.arg_name, "type": p.type_name, "description": p.description}
+            for p in attributes
         ],
         "returns": (
             {"type": parsed.returns.type_name, "description": parsed.returns.description}

@@ -8,13 +8,13 @@
   --color-bg:           #ffffff;
   --color-bg-soft:      #fafbfc;
   --color-bg-code:      #0d1117;
-  --color-border:       #e4e7eb;
-  --color-border-soft:  #f0f1f4;
+  --color-border:       #cbd5e1;
+  --color-border-soft:  #dde1e7;
 
   --color-ink:          #0f172a;   /* primary text */
   --color-ink-soft:     #334155;   /* secondary text */
   --color-muted:        #64748b;   /* tertiary text */
-  --color-dim:          #94a3b8;   /* meta / dim */
+  --color-dim:          #7c8ba1;   /* meta / dim */
 
   --color-accent:       #6d49d9;   /* DapplePot purple, tuned for light bg */
   --color-accent-soft:  #ede9fe;
@@ -156,13 +156,19 @@ button { font: inherit; cursor: pointer; }
   background: var(--color-accent);
 }
 .prose strong { color: var(--color-ink); font-weight: 600; }
-.prose a {
+/* `.no-underline` opts a link out of this border-bottom-as-underline trick —
+   for card-style links (Quickstart cards, PrevNext) that declare a real
+   4-side border via Tailwind's `border` utility. Without the exclusion,
+   this rule's `border-bottom` unconditionally overrode just their bottom
+   edge, since it's plain unlayered CSS with higher priority than a
+   Tailwind utility class. */
+.prose a:not(.no-underline) {
   color: var(--color-accent);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.15s;
 }
-.prose a:hover { border-bottom-color: var(--color-accent); }
+.prose a:not(.no-underline):hover { border-bottom-color: var(--color-accent); }
 .prose code {
   font-family: var(--font-mono);
   font-size: 0.88em;

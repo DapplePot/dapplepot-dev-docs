@@ -12,7 +12,7 @@ const Sidebar = ({ currentPath, open, onClose }) => (
     )}
 
     <aside
-      className={`scrollarea fixed left-0 top-14 z-40 h-[calc(100vh-56px)] w-64 overflow-y-auto border-r border-border bg-bg-soft px-4 py-6 transition-transform md:sticky md:translate-x-0 ${
+      className={`scrollarea fixed left-0 top-14 z-40 h-[calc(100vh-56px)] w-64 overflow-y-auto border-r border-border px-4 py-6 transition-transform md:sticky md:translate-x-0 ${
         open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       }`}
     >

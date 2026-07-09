@@ -5,7 +5,10 @@ const FaqItem = ({ id, q, children }) => (
   <details id={id} className="group my-3 rounded-lg border border-border bg-bg-soft px-4 py-3 [&[open]]:bg-bg [&[open]]:shadow-sm">
     <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[15px] font-semibold text-ink">
       <span>{q}</span>
-      <span className="font-mono text-[13px] text-muted transition-transform group-open:rotate-180">⌄</span>
+      <span className="font-mono text-[15px] text-muted">
+        <span className="group-open:hidden">+</span>
+        <span className="hidden group-open:inline">−</span>
+      </span>
     </summary>
     <div className="mt-3 border-t border-border-soft pt-3 text-[14px] leading-relaxed text-ink-soft">
       {children}

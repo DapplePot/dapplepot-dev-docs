@@ -5,7 +5,7 @@ import SearchPalette from './SearchPalette.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 
 const TopBar = ({ onMenuClick }) => (
-  <header className="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-md">
+  <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-md">
     <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6">
       <div className="flex items-center gap-3">
         <button
@@ -26,33 +26,40 @@ const TopBar = ({ onMenuClick }) => (
         </Link>
       </div>
 
-      <nav className="flex items-center gap-3">
-        <SearchPalette />
-        <ThemeToggle />
-        <a
-          href="https://github.com/DapplePot/dapplepot-sdk"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-md p-1.5 text-ink-soft hover:bg-bg-soft hover:text-ink"
-        >
-          <FaGithub size={18} />
-        </a>
-        <a
-          href="https://www.linkedin.com/company/dapplepot/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-md p-1.5 text-ink-soft hover:bg-bg-soft hover:text-ink"
-        >
-          <FaLinkedin size={18} />
-        </a>
-        <a
-          href="https://x.com/DapplePot"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-md p-1.5 text-ink-soft hover:bg-bg-soft hover:text-ink"
-        >
-          <FaXTwitter size={18} />
-        </a>
+      <nav className="flex items-center gap-5">
+        <div className="flex items-center gap-2">
+          <SearchPalette />
+          <ThemeToggle />
+        </div>
+
+        <div className="h-5 w-px bg-border" aria-hidden="true" />
+
+        <div className="flex items-center gap-1">
+          <a
+            href="https://github.com/DapplePot/dapplepot-sdk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md p-1.5 text-ink-soft hover:bg-bg-soft hover:text-ink"
+          >
+            <FaGithub size={18} />
+          </a>
+          <a
+            href="https://www.linkedin.com/company/dapplepot/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md p-1.5 text-ink-soft hover:bg-bg-soft hover:text-ink"
+          >
+            <FaLinkedin size={18} />
+          </a>
+          <a
+            href="https://x.com/DapplePot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md p-1.5 text-ink-soft hover:bg-bg-soft hover:text-ink"
+          >
+            <FaXTwitter size={18} />
+          </a>
+        </div>
       </nav>
     </div>
   </header>

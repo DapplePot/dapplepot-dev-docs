@@ -10,6 +10,21 @@ const slug = (moduleName, className) =>
 // to plain inline <code> so raw backticks/roles don't leak into the page.
 const DOCSTRING_MARKUP_RE = /:(?:class|meth|func|attr|exc):`([^`]+)`|``([^`]+)``/g;
 
+// Summary/description text keeps the source's line-wrapping (PEP 8 wraps
+// docstring prose at ~79 chars) — docstring_parser preserves those as literal
+// single newlines, indistinguishable from an intentional one-line break.
+// Rendered with `whitespace-pre-line`, every wrap became a visible line
+// break, chopping one flowing sentence into several short lines. Collapse
+// single newlines (mid-paragraph wrap) into a space; keep blank-line gaps
+// (an actual paragraph break) as one newline for `whitespace-pre-line` to render.
+const normalizeProse = (text) => {
+  if (!text) return text;
+  return text
+    .split(/\n{2,}/)
+    .map((para) => para.replace(/\s*\n\s*/g, ' ').trim())
+    .join('\n\n');
+};
+
 const renderDocText = (text) => {
   if (!text) return text;
   const nodes = [];
@@ -48,6 +63,33 @@ const METHOD_GUIDES = {
   callback_handler: { label: 'LangChain / LangGraph guide', path: '/sdk/agent-frameworks/langchain' },
 };
 
+// Shared by MethodCard's "Args" and ClassSection's "Attributes" — same
+// {name, type, description} shape, just a different section label and
+// source (method parameters vs. instance attributes).
+const FieldTable = ({ label, fields }) => {
+  if (fields.length === 0) return null;
+  return (
+    <>
+      <div className="mt-3 mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-dim">
+        {label}
+      </div>
+      <table className="w-full text-[13.5px]">
+        <tbody>
+          {fields.map((f) => (
+            <tr key={f.name} className="border-t border-border-soft">
+              <td className="py-1.5 pr-3 align-top font-mono text-accent-deep">{f.name}</td>
+              {f.type && (
+                <td className="py-1.5 pr-3 align-top font-mono text-dim">{f.type}</td>
+              )}
+              <td className="py-1.5 align-top text-ink-soft">{renderDocText(f.description)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+};
+
 const MethodCard = ({ method, anchorId }) => {
   const { docstring: doc } = method;
   const guide = METHOD_GUIDES[method.name];
@@ -66,29 +108,10 @@ const MethodCard = ({ method, anchorId }) => {
 
       {doc.summary && <p className="font-medium text-ink">{renderDocText(doc.summary)}</p>}
       {doc.description && (
-        <p className="whitespace-pre-line text-ink-soft">{renderDocText(doc.description)}</p>
+        <p className="whitespace-pre-line text-ink-soft">{renderDocText(normalizeProse(doc.description))}</p>
       )}
 
-      {doc.args.length > 0 && (
-        <>
-          <div className="mt-3 mb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-dim">
-            Args
-          </div>
-          <table className="w-full text-[13.5px]">
-            <tbody>
-              {doc.args.map((a) => (
-                <tr key={a.name} className="border-t border-border-soft">
-                  <td className="py-1.5 pr-3 align-top font-mono text-accent-deep">{a.name}</td>
-                  {a.type && (
-                    <td className="py-1.5 pr-3 align-top font-mono text-dim">{a.type}</td>
-                  )}
-                  <td className="py-1.5 align-top text-ink-soft">{renderDocText(a.description)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+      <FieldTable label="Args" fields={doc.args} />
 
       {doc.returns && (
         <>
@@ -131,8 +154,9 @@ const ClassSection = ({ moduleName, cls }) => {
       </div>
       {cls.docstring.summary && <p className="lede">{renderDocText(cls.docstring.summary)}</p>}
       {cls.docstring.description && (
-        <p className="whitespace-pre-line">{renderDocText(cls.docstring.description)}</p>
+        <p className="whitespace-pre-line">{renderDocText(normalizeProse(cls.docstring.description))}</p>
       )}
+      <FieldTable label="Attributes" fields={cls.docstring.attributes ?? []} />
       {cls.methods.map((m) => (
         <MethodCard key={m.name} method={m} anchorId={`${slug(moduleName, cls.name)}-${m.name}`} />
       ))}

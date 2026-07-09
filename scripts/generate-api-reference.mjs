@@ -39,13 +39,44 @@ function shCapture(cmd, args, opts = {}) {
   return execFileSync(cmd, args, { encoding: 'utf-8', ...opts });
 }
 
+function commandWorks(cmd, args) {
+  try {
+    execFileSync(cmd, args, { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// `python3` doesn't exist on most Windows installs — only `python`, or (worse)
+// the Microsoft Store's app-execution-alias stub, which "exists" on PATH but
+// exits with an error telling you to install from the Store. Try candidates
+// in the order most likely to be a real interpreter on each platform and use
+// the first one that actually runs, instead of assuming a single name.
+function resolveBasePython() {
+  const candidates = isWindows
+    ? [['py', ['-3']], ['python', []], ['python3', []]]
+    : [['python3', []], ['python', []]];
+  for (const [cmd, baseArgs] of candidates) {
+    if (commandWorks(cmd, [...baseArgs, '--version'])) {
+      return { cmd, baseArgs };
+    }
+  }
+  throw new Error(
+    'Could not find a working Python 3 interpreter. Tried: ' +
+    candidates.map(([cmd, baseArgs]) => [cmd, ...baseArgs].join(' ')).join(', ') +
+    '. Install Python 3.10+ and make sure it is on PATH.'
+  );
+}
+
 function main() {
   const { version } = JSON.parse(readFileSync(join(ROOT, 'sdk-version.json'), 'utf-8'));
   const localPath = process.env.DAPPLEPOT_SDK_LOCAL_PATH;
 
   if (!existsSync(venvPython)) {
     console.log(`Creating docgen venv at ${VENV_DIR}...`);
-    sh('python3', ['-m', 'venv', VENV_DIR]);
+    const { cmd, baseArgs } = resolveBasePython();
+    sh(cmd, [...baseArgs, '-m', 'venv', VENV_DIR]);
   }
 
   // dapplepot-sdk itself carries no docs-generation code or dependencies —
